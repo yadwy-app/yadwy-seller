@@ -5,9 +5,11 @@ import {
 	HeadContent,
 	Outlet,
 	Scripts,
+	useMatches,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { DashboardLayout } from "@/components/layout";
+import { AuthProvider } from "@/contexts";
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
 import appCss from "@/styles.css?url";
 
@@ -44,14 +46,31 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	component: RootComponent,
 });
 
+// Routes that don't need the dashboard layout
+const publicRoutes = ["/login", "/signup"];
+
 function RootComponent() {
+	const matches = useMatches();
+	const currentPath = matches[matches.length - 1]?.pathname || "/";
+	const isPublicRoute = publicRoutes.includes(currentPath);
+
 	return (
 		<RootDocument>
-			<DashboardLayout>
-				<Outlet />
-			</DashboardLayout>
+			<AuthProvider>
+				{isPublicRoute ? (
+					<Outlet />
+				) : (
+					<AuthenticatedLayout>
+						<Outlet />
+					</AuthenticatedLayout>
+				)}
+			</AuthProvider>
 		</RootDocument>
 	);
+}
+
+function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+	return <DashboardLayout>{children}</DashboardLayout>;
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
