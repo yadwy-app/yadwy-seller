@@ -13,7 +13,7 @@ function ProductsPage() {
 	const { data: products, isLoading } = useProducts();
 
 	return (
-		<div className="max-w-5xl">
+		<div>
 			<PageHeader
 				title="Products"
 				actions={

@@ -44,7 +44,7 @@ function OrderDetailPage() {
 
 	if (isLoading) {
 		return (
-			<div className="max-w-5xl">
+			<div>
 				<div className="animate-pulse">
 					<div className="h-8 bg-muted rounded w-48 mb-6" />
 					<div className="h-64 bg-muted rounded" />
@@ -55,7 +55,7 @@ function OrderDetailPage() {
 
 	if (!order) {
 		return (
-			<div className="max-w-5xl">
+			<div>
 				<h1 className="text-xl font-semibold mb-4">Order not found</h1>
 				<p className="text-muted-foreground">
 					The order you're looking for doesn't exist.
@@ -71,7 +71,7 @@ function OrderDetailPage() {
 	}
 
 	return (
-		<div className="max-w-5xl">
+		<div>
 			{/* Header */}
 			<div className="flex items-center gap-4 mb-6">
 				<Link

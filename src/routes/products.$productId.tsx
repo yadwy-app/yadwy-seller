@@ -34,7 +34,7 @@ function ProductDetailPage() {
 
 	if (isLoading) {
 		return (
-			<div className="max-w-6xl pb-20">
+			<div className="pb-20">
 				<div className="animate-pulse">
 					<div className="h-8 bg-muted rounded w-48 mb-6" />
 					<div className="h-64 bg-muted rounded" />
@@ -45,7 +45,7 @@ function ProductDetailPage() {
 
 	if (!product) {
 		return (
-			<div className="max-w-6xl pb-20">
+			<div className="pb-20">
 				<div className="flex items-center gap-4 mb-6">
 					<Link
 						to="/products"
@@ -92,7 +92,7 @@ function ProductDetailPage() {
 			</div>
 
 			{/* Two-column layout */}
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-6xl">
+			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 				{/* Main content - 2 columns */}
 				<div className="lg:col-span-2 space-y-4">
 					{/* Title & Description */}
@@ -356,7 +356,7 @@ function ProductDetailPage() {
 
 			{/* Sticky bottom save bar */}
 			<div className="sticky bottom-0 -mx-6 mt-6 bg-card border-t border-border p-4">
-				<div className="max-w-6xl flex justify-end gap-3">
+				<div className="flex justify-end gap-3">
 					<Button variant="outline">Discard</Button>
 					<Button>Save</Button>
 				</div>

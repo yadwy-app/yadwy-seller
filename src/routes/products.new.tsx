@@ -33,7 +33,7 @@ function NewProductPage() {
 			</div>
 
 			{/* Two-column layout */}
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl">
+			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 				{/* Main content - 2 columns */}
 				<div className="lg:col-span-2 space-y-4">
 					{/* Title & Description */}
@@ -291,7 +291,7 @@ function NewProductPage() {
 
 			{/* Sticky bottom save bar */}
 			<div className="sticky bottom-0 -mx-6 mt-6 bg-card border-t border-border p-4">
-				<div className="max-w-6xl flex justify-end gap-3">
+				<div className="flex justify-end gap-3">
 					<Link to="/products">
 						<Button variant="outline">Discard</Button>
 					</Link>

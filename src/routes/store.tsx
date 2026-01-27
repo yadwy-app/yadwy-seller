@@ -9,7 +9,7 @@ export const Route = createFileRoute("/store")({
 
 function StorePage() {
 	return (
-		<div className="max-w-5xl">
+		<div>
 			<PageHeader
 				title="Store"
 				subtitle="Manage your store settings and appearance"

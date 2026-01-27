@@ -39,7 +39,7 @@ function OrdersPage() {
 	})
 
 	return (
-		<div className="max-w-6xl">
+		<div>
 			<PageHeader
 				title="Orders"
 				actions={
