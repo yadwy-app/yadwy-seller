@@ -3,13 +3,14 @@ import type { QueryClient } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
 	HeadContent,
+	Navigate,
 	Outlet,
 	Scripts,
 	useMatches,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { DashboardLayout } from "@/components/layout";
-import { AuthProvider } from "@/contexts";
+import { AuthProvider, useAuth } from "@/contexts";
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
 import appCss from "@/styles.css?url";
 
@@ -46,7 +47,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	component: RootComponent,
 });
 
-// Routes that don't need the dashboard layout
+// Routes that don't need the dashboard layout or authentication
 const publicRoutes = ["/login", "/signup"];
 
 function RootComponent() {
@@ -60,13 +61,35 @@ function RootComponent() {
 				{isPublicRoute ? (
 					<Outlet />
 				) : (
-					<AuthenticatedLayout>
-						<Outlet />
-					</AuthenticatedLayout>
+					<AuthGuard>
+						<AuthenticatedLayout>
+							<Outlet />
+						</AuthenticatedLayout>
+					</AuthGuard>
 				)}
 			</AuthProvider>
 		</RootDocument>
 	);
+}
+
+function AuthGuard({ children }: { children: React.ReactNode }) {
+	const { isAuthenticated, isLoading } = useAuth();
+
+	// Show nothing while checking auth status
+	if (isLoading) {
+		return (
+			<div className="flex min-h-svh items-center justify-center">
+				<div className="animate-pulse text-muted-foreground">Loading...</div>
+			</div>
+		);
+	}
+
+	// Redirect to login if not authenticated
+	if (!isAuthenticated) {
+		return <Navigate to="/login" />;
+	}
+
+	return <>{children}</>;
 }
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
