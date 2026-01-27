@@ -18,11 +18,11 @@ body {
 
 /* shadcn Default Light Theme - Clean and minimal */
 :root {
-	/* Core colors - white and clean grays */
-	--background: oklch(1 0 0); /* Pure white */
+	/* Core colors - Shopify-style light gray background */
+	--background: oklch(0.975 0.001 286); /* Subtle gray like Shopify */
 	--foreground: oklch(0.145 0.005 285.823);
 
-	/* Cards and surfaces */
+	/* Cards and surfaces - Pure white for contrast */
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.145 0.005 285.823);
 	--popover: oklch(1 0 0);
@@ -62,8 +62,8 @@ body {
 
 	--radius: 0.625rem;
 
-	/* Sidebar - clean white matching main content */
-	--sidebar: oklch(0.985 0 0);
+	/* Sidebar - Slightly darker than page background (Shopify style) */
+	--sidebar: oklch(0.965 0.001 286);
 	--sidebar-foreground: oklch(0.145 0.005 285.823);
 	--sidebar-primary: oklch(0.205 0.006 285.885);
 	--sidebar-primary-foreground: oklch(0.985 0 0);
