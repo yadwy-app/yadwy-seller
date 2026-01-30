@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, MoreHorizontal, Plus, Upload } from "lucide-react";
+import { ArrowLeft, MoreHorizontal, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,15 +13,16 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { useProduct } from "@/hooks";
+import { Textarea } from "@/components/ui/textarea";
+import { useProduct } from "./-hooks/useProducts";
 
 export const Route = createFileRoute("/products/$productId")({
 	component: ProductDetailPage,
 });
 
 function ProductDetailPage() {
+	const { t } = useTranslation();
 	const { productId } = Route.useParams();
 	const { data: product, isLoading } = useProduct(productId);
 
@@ -63,8 +65,11 @@ function ProductDetailPage() {
 	}
 
 	// Calculate profit and margin if cost is available
-	const profit = product.costPerItem ? product.price - product.costPerItem : null;
-	const margin = profit && product.price > 0 ? (profit / product.price) * 100 : null;
+	const profit = product.costPerItem
+		? product.price - product.costPerItem
+		: null;
+	const margin =
+		profit && product.price > 0 ? (profit / product.price) * 100 : null;
 
 	return (
 		<div className="pb-20">
@@ -100,7 +105,7 @@ function ProductDetailPage() {
 						<CardContent className="pt-6">
 							<div className="space-y-4">
 								<div>
-									<Label htmlFor="title">Title</Label>
+									<Label htmlFor="title">{t("products.new.name")}</Label>
 									<Input
 										id="title"
 										defaultValue={product.title}
@@ -108,7 +113,9 @@ function ProductDetailPage() {
 									/>
 								</div>
 								<div>
-									<Label htmlFor="description">Description</Label>
+									<Label htmlFor="description">
+										{t("products.new.description")}
+									</Label>
 									<Textarea
 										id="description"
 										defaultValue={product.description}
@@ -122,7 +129,9 @@ function ProductDetailPage() {
 					{/* Media */}
 					<Card>
 						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">Media</CardTitle>
+							<CardTitle className="text-base font-medium">
+								{t("products.new.media")}
+							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="grid grid-cols-4 gap-3">
@@ -145,12 +154,14 @@ function ProductDetailPage() {
 					{/* Pricing */}
 					<Card>
 						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">Pricing</CardTitle>
+							<CardTitle className="text-base font-medium">
+								{t("products.new.pricing")}
+							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="grid grid-cols-2 gap-4">
 								<div>
-									<Label htmlFor="price">Price</Label>
+									<Label htmlFor="price">{t("products.new.price")}</Label>
 									<div className="relative mt-1.5">
 										<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
 											EGP
@@ -164,7 +175,9 @@ function ProductDetailPage() {
 									</div>
 								</div>
 								<div>
-									<Label htmlFor="compareAt">Compare-at price</Label>
+									<Label htmlFor="compareAt">
+										{t("products.new.compareAtPrice")}
+									</Label>
 									<div className="relative mt-1.5">
 										<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
 											EGP
@@ -181,7 +194,9 @@ function ProductDetailPage() {
 							<div className="mt-4 pt-4 border-t">
 								<div className="grid grid-cols-2 gap-4">
 									<div>
-										<Label htmlFor="cost">Cost per item</Label>
+										<Label htmlFor="cost">
+											{t("products.new.costPerItem")}
+										</Label>
 										<div className="relative mt-1.5">
 											<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
 												EGP
@@ -198,13 +213,25 @@ function ProductDetailPage() {
 										<div className="flex gap-4 text-sm">
 											<span className="text-muted-foreground">
 												Profit:{" "}
-												<span className={profit && profit > 0 ? "text-green-600 font-medium" : "text-muted-foreground"}>
+												<span
+													className={
+														profit && profit > 0
+															? "text-green-600 font-medium"
+															: "text-muted-foreground"
+													}
+												>
 													{profit !== null ? formatCurrency(profit) : "--"}
 												</span>
 											</span>
 											<span className="text-muted-foreground">
 												Margin:{" "}
-												<span className={margin && margin > 0 ? "text-green-600 font-medium" : "text-muted-foreground"}>
+												<span
+													className={
+														margin && margin > 0
+															? "text-green-600 font-medium"
+															: "text-muted-foreground"
+													}
+												>
 													{margin !== null ? `${margin.toFixed(1)}%` : "--"}
 												</span>
 											</span>
@@ -219,10 +246,15 @@ function ProductDetailPage() {
 					<Card>
 						<CardHeader className="pb-3">
 							<div className="flex items-center justify-between">
-								<CardTitle className="text-base font-medium">Inventory</CardTitle>
+								<CardTitle className="text-base font-medium">
+									{t("products.new.inventory")}
+								</CardTitle>
 								<div className="flex items-center gap-2">
-									<Label htmlFor="track-inventory" className="text-sm font-normal text-muted-foreground">
-										Track inventory
+									<Label
+										htmlFor="track-inventory"
+										className="text-sm font-normal text-muted-foreground"
+									>
+										{t("products.new.trackQuantity")}
 									</Label>
 									<Switch id="track-inventory" defaultChecked />
 								</div>
@@ -231,11 +263,15 @@ function ProductDetailPage() {
 						<CardContent>
 							<div className="grid grid-cols-2 gap-4">
 								<div>
-									<Label htmlFor="sku">SKU</Label>
-									<Input id="sku" defaultValue={product.sku} className="mt-1.5" />
+									<Label htmlFor="sku">{t("products.new.sku")}</Label>
+									<Input
+										id="sku"
+										defaultValue={product.sku}
+										className="mt-1.5"
+									/>
 								</div>
 								<div>
-									<Label htmlFor="barcode">Barcode</Label>
+									<Label htmlFor="barcode">{t("products.new.barcode")}</Label>
 									<Input
 										id="barcode"
 										defaultValue={product.barcode ?? ""}
@@ -244,7 +280,7 @@ function ProductDetailPage() {
 								</div>
 							</div>
 							<div className="mt-4">
-								<Label htmlFor="quantity">Available</Label>
+								<Label htmlFor="quantity">{t("products.new.quantity")}</Label>
 								<Input
 									id="quantity"
 									type="number"
@@ -259,7 +295,9 @@ function ProductDetailPage() {
 					{product.variants.length > 0 && (
 						<Card>
 							<CardHeader className="pb-3">
-								<CardTitle className="text-base font-medium">Variants</CardTitle>
+								<CardTitle className="text-base font-medium">
+									{t("products.detail.variants")}
+								</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-2">
@@ -286,7 +324,9 @@ function ProductDetailPage() {
 					{/* Status */}
 					<Card>
 						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">Status</CardTitle>
+							<CardTitle className="text-base font-medium">
+								{t("products.new.status")}
+							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<Select defaultValue={product.status}>
@@ -294,9 +334,15 @@ function ProductDetailPage() {
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value="active">Active</SelectItem>
-									<SelectItem value="draft">Draft</SelectItem>
-									<SelectItem value="archived">Archived</SelectItem>
+									<SelectItem value="active">
+										{t("products.new.active")}
+									</SelectItem>
+									<SelectItem value="draft">
+										{t("products.new.draft")}
+									</SelectItem>
+									<SelectItem value="archived">
+										{t("products.status.archived")}
+									</SelectItem>
 								</SelectContent>
 							</Select>
 						</CardContent>
@@ -305,7 +351,9 @@ function ProductDetailPage() {
 					{/* Publishing */}
 					<Card>
 						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">Publishing</CardTitle>
+							<CardTitle className="text-base font-medium">
+								Publishing
+							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="flex flex-wrap gap-2">
@@ -320,12 +368,14 @@ function ProductDetailPage() {
 					{/* Product organization */}
 					<Card>
 						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">Product organization</CardTitle>
+							<CardTitle className="text-base font-medium">
+								{t("products.new.organization")}
+							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
 								<div>
-									<Label htmlFor="category">Category</Label>
+									<Label htmlFor="category">{t("products.new.category")}</Label>
 									<Input
 										id="category"
 										defaultValue={product.category}
@@ -333,7 +383,7 @@ function ProductDetailPage() {
 									/>
 								</div>
 								<div>
-									<Label htmlFor="vendor">Vendor</Label>
+									<Label htmlFor="vendor">{t("products.new.vendor")}</Label>
 									<Input
 										id="vendor"
 										defaultValue={product.vendor}
@@ -341,10 +391,10 @@ function ProductDetailPage() {
 									/>
 								</div>
 								<div>
-									<Label htmlFor="tags">Tags</Label>
+									<Label htmlFor="tags">{t("products.new.tags")}</Label>
 									<Input
 										id="tags"
-										placeholder="Add tags..."
+										placeholder={t("products.new.tags")}
 										className="mt-1.5"
 									/>
 								</div>
@@ -357,8 +407,8 @@ function ProductDetailPage() {
 			{/* Sticky bottom save bar */}
 			<div className="sticky bottom-0 -mx-6 mt-6 bg-card border-t border-border p-4">
 				<div className="flex justify-end gap-3">
-					<Button variant="outline">Discard</Button>
-					<Button>Save</Button>
+					<Button variant="outline">{t("common.cancel")}</Button>
+					<Button>{t("common.save")}</Button>
 				</div>
 			</div>
 		</div>

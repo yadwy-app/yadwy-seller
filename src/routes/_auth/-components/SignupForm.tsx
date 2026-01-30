@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/contexts";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts";
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg viewBox="0 0 24 24" {...props}>
+			<title>Google</title>
 			<path
 				d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
 				fill="#4285F4"
@@ -33,6 +35,7 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function SignupForm() {
+	const { t } = useTranslation();
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -51,7 +54,9 @@ export function SignupForm() {
 			await signup(name, email, password);
 			navigate({ to: "/" });
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Signup failed");
+			setError(
+				err instanceof Error ? err.message : t("auth.errors.signupFailed"),
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -65,7 +70,11 @@ export function SignupForm() {
 			await signupWithGoogle();
 			navigate({ to: "/" });
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Google signup failed");
+			setError(
+				err instanceof Error
+					? err.message
+					: t("auth.errors.googleSignupFailed"),
+			);
 		} finally {
 			setIsGoogleLoading(false);
 		}
@@ -81,9 +90,9 @@ export function SignupForm() {
 								<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground mb-2">
 									<span className="font-bold text-lg">Y</span>
 								</div>
-								<h1 className="text-2xl font-bold">Create an account</h1>
+								<h1 className="text-2xl font-bold">{t("auth.signup.title")}</h1>
 								<p className="text-muted-foreground text-balance text-sm">
-									Start selling on Yadwy today
+									{t("auth.signup.subtitle")}
 								</p>
 							</div>
 
@@ -95,11 +104,11 @@ export function SignupForm() {
 
 							<div className="grid gap-4">
 								<div className="grid gap-2">
-									<Label htmlFor="name">Full name</Label>
+									<Label htmlFor="name">{t("auth.signup.fullName")}</Label>
 									<Input
 										id="name"
 										type="text"
-										placeholder="John Doe"
+										placeholder={t("auth.signup.fullNamePlaceholder")}
 										value={name}
 										onChange={(e) => setName(e.target.value)}
 										required
@@ -107,11 +116,11 @@ export function SignupForm() {
 									/>
 								</div>
 								<div className="grid gap-2">
-									<Label htmlFor="email">Email</Label>
+									<Label htmlFor="email">{t("auth.signup.email")}</Label>
 									<Input
 										id="email"
 										type="email"
-										placeholder="seller@example.com"
+										placeholder={t("auth.signup.emailPlaceholder")}
 										value={email}
 										onChange={(e) => setEmail(e.target.value)}
 										required
@@ -119,11 +128,11 @@ export function SignupForm() {
 									/>
 								</div>
 								<div className="grid gap-2">
-									<Label htmlFor="password">Password</Label>
+									<Label htmlFor="password">{t("auth.signup.password")}</Label>
 									<Input
 										id="password"
 										type="password"
-										placeholder="At least 8 characters"
+										placeholder={t("auth.signup.passwordPlaceholder")}
 										value={password}
 										onChange={(e) => setPassword(e.target.value)}
 										required
@@ -131,9 +140,15 @@ export function SignupForm() {
 										disabled={isLoading || isGoogleLoading}
 									/>
 								</div>
-								<Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
-									{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-									Create account
+								<Button
+									type="submit"
+									className="w-full"
+									disabled={isLoading || isGoogleLoading}
+								>
+									{isLoading && (
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									)}
+									{t("auth.signup.createAccountButton")}
 								</Button>
 							</div>
 
@@ -143,7 +158,7 @@ export function SignupForm() {
 								</div>
 								<div className="relative flex justify-center text-xs uppercase">
 									<span className="bg-card px-2 text-muted-foreground">
-										Or continue with
+										{t("auth.signup.orContinueWith")}
 									</span>
 								</div>
 							</div>
@@ -160,13 +175,16 @@ export function SignupForm() {
 								) : (
 									<GoogleIcon className="mr-2 h-4 w-4" />
 								)}
-								Continue with Google
+								{t("auth.signup.continueWithGoogle")}
 							</Button>
 
 							<p className="text-center text-sm text-muted-foreground">
-								Already have an account?{" "}
-								<Link to="/login" className="underline underline-offset-4 hover:text-primary">
-									Login
+								{t("auth.signup.hasAccount")}{" "}
+								<Link
+									to="/login"
+									className="underline underline-offset-4 hover:text-primary"
+								>
+									{t("auth.signup.login")}
 								</Link>
 							</p>
 						</div>
@@ -176,23 +194,31 @@ export function SignupForm() {
 							<div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground mb-6">
 								<span className="font-bold text-3xl">Y</span>
 							</div>
-							<h2 className="text-2xl font-bold text-center mb-2">Join Yadwy</h2>
+							<h2 className="text-2xl font-bold text-center mb-2">
+								{t("auth.sidebar.joinYadwy")}
+							</h2>
 							<p className="text-muted-foreground text-center text-sm max-w-xs">
-								Create your seller account and start reaching customers across Egypt.
+								{t("auth.sidebar.joinDescription")}
 							</p>
 						</div>
 					</div>
 				</CardContent>
 			</Card>
 			<p className="px-6 text-center text-xs text-muted-foreground">
-				By creating an account, you agree to our{" "}
-				<a href="#" className="underline underline-offset-4 hover:text-primary">
-					Terms of Service
-				</a>{" "}
-				and{" "}
-				<a href="#" className="underline underline-offset-4 hover:text-primary">
-					Privacy Policy
-				</a>
+				{t("auth.signup.termsNotice")}{" "}
+				<button
+					type="button"
+					className="underline underline-offset-4 hover:text-primary"
+				>
+					{t("auth.signup.termsOfService")}
+				</button>{" "}
+				{t("auth.signup.and")}{" "}
+				<button
+					type="button"
+					className="underline underline-offset-4 hover:text-primary"
+				>
+					{t("auth.signup.privacyPolicy")}
+				</button>
 				.
 			</p>
 		</div>

@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { LoginForm } from "@/components/auth";
+import { LoginForm } from "./-components/LoginForm";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/_auth/login")({
 	beforeLoad: () => {
 		// Check if user is already logged in (SSR-safe)
 		if (typeof window !== "undefined") {

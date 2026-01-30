@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/contexts";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts";
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg viewBox="0 0 24 24" {...props}>
+			<title>Google</title>
 			<path
 				d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
 				fill="#4285F4"
@@ -33,6 +35,7 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function LoginForm() {
+	const { t } = useTranslation();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +53,9 @@ export function LoginForm() {
 			await login(email, password);
 			navigate({ to: "/" });
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Login failed");
+			setError(
+				err instanceof Error ? err.message : t("auth.errors.loginFailed"),
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -64,7 +69,9 @@ export function LoginForm() {
 			await loginWithGoogle();
 			navigate({ to: "/" });
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Google login failed");
+			setError(
+				err instanceof Error ? err.message : t("auth.errors.googleLoginFailed"),
+			);
 		} finally {
 			setIsGoogleLoading(false);
 		}
@@ -80,9 +87,9 @@ export function LoginForm() {
 								<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground mb-2">
 									<span className="font-bold text-lg">Y</span>
 								</div>
-								<h1 className="text-2xl font-bold">Welcome back</h1>
+								<h1 className="text-2xl font-bold">{t("auth.login.title")}</h1>
 								<p className="text-muted-foreground text-balance text-sm">
-									Login to your Yadwy seller account
+									{t("auth.login.subtitle")}
 								</p>
 							</div>
 
@@ -94,11 +101,11 @@ export function LoginForm() {
 
 							<div className="grid gap-4">
 								<div className="grid gap-2">
-									<Label htmlFor="email">Email</Label>
+									<Label htmlFor="email">{t("auth.login.email")}</Label>
 									<Input
 										id="email"
 										type="email"
-										placeholder="seller@example.com"
+										placeholder={t("auth.login.emailPlaceholder")}
 										value={email}
 										onChange={(e) => setEmail(e.target.value)}
 										required
@@ -107,13 +114,13 @@ export function LoginForm() {
 								</div>
 								<div className="grid gap-2">
 									<div className="flex items-center">
-										<Label htmlFor="password">Password</Label>
-										<a
-											href="#"
+										<Label htmlFor="password">{t("auth.login.password")}</Label>
+										<button
+											type="button"
 											className="ml-auto text-sm underline-offset-4 hover:underline text-muted-foreground"
 										>
-											Forgot password?
-										</a>
+											{t("auth.login.forgotPassword")}
+										</button>
 									</div>
 									<Input
 										id="password"
@@ -124,9 +131,15 @@ export function LoginForm() {
 										disabled={isLoading || isGoogleLoading}
 									/>
 								</div>
-								<Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
-									{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-									Login
+								<Button
+									type="submit"
+									className="w-full"
+									disabled={isLoading || isGoogleLoading}
+								>
+									{isLoading && (
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									)}
+									{t("auth.login.loginButton")}
 								</Button>
 							</div>
 
@@ -136,7 +149,7 @@ export function LoginForm() {
 								</div>
 								<div className="relative flex justify-center text-xs uppercase">
 									<span className="bg-card px-2 text-muted-foreground">
-										Or continue with
+										{t("auth.login.orContinueWith")}
 									</span>
 								</div>
 							</div>
@@ -153,13 +166,16 @@ export function LoginForm() {
 								) : (
 									<GoogleIcon className="mr-2 h-4 w-4" />
 								)}
-								Continue with Google
+								{t("auth.login.continueWithGoogle")}
 							</Button>
 
 							<p className="text-center text-sm text-muted-foreground">
-								Don't have an account?{" "}
-								<Link to="/signup" className="underline underline-offset-4 hover:text-primary">
-									Sign up
+								{t("auth.login.noAccount")}{" "}
+								<Link
+									to="/signup"
+									className="underline underline-offset-4 hover:text-primary"
+								>
+									{t("auth.login.signUp")}
 								</Link>
 							</p>
 						</div>
@@ -169,23 +185,31 @@ export function LoginForm() {
 							<div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground mb-6">
 								<span className="font-bold text-3xl">Y</span>
 							</div>
-							<h2 className="text-2xl font-bold text-center mb-2">Yadwy Seller</h2>
+							<h2 className="text-2xl font-bold text-center mb-2">
+								{t("auth.sidebar.yadwySeller")}
+							</h2>
 							<p className="text-muted-foreground text-center text-sm max-w-xs">
-								Manage your products, track orders, and grow your business with Yadwy's seller dashboard.
+								{t("auth.sidebar.sellerDashboardDescription")}
 							</p>
 						</div>
 					</div>
 				</CardContent>
 			</Card>
 			<p className="px-6 text-center text-xs text-muted-foreground">
-				By continuing, you agree to our{" "}
-				<a href="#" className="underline underline-offset-4 hover:text-primary">
-					Terms of Service
-				</a>{" "}
-				and{" "}
-				<a href="#" className="underline underline-offset-4 hover:text-primary">
-					Privacy Policy
-				</a>
+				{t("auth.login.termsNotice")}{" "}
+				<button
+					type="button"
+					className="underline underline-offset-4 hover:text-primary"
+				>
+					{t("auth.login.termsOfService")}
+				</button>{" "}
+				{t("auth.login.and")}{" "}
+				<button
+					type="button"
+					className="underline underline-offset-4 hover:text-primary"
+				>
+					{t("auth.login.privacyPolicy")}
+				</button>
 				.
 			</p>
 		</div>

@@ -2,34 +2,22 @@
 
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import {
-	Home,
-	ShoppingCart,
-	Package,
-	Store,
-	Settings,
-	Search,
 	Bell,
 	ChevronsLeft,
 	ChevronsRight,
+	Home,
 	LogOut,
+	Package,
+	Search,
+	Settings,
+	ShoppingCart,
+	Store,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/contexts";
-
-import {
-	Sidebar,
-	SidebarContent,
-	SidebarFooter,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	SidebarProvider,
-	SidebarInset,
-	useSidebar,
-} from "@/components/ui/sidebar";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 import {
 	CommandDialog,
@@ -47,21 +35,33 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-
-
-const navItems = [
-	{ to: "/", icon: Home, label: "Home" },
-	{ to: "/orders", icon: ShoppingCart, label: "Orders" },
-	{ to: "/products", icon: Package, label: "Products" },
-	{ to: "/store", icon: Store, label: "Store" },
-];
-
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarHeader,
+	SidebarInset,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarProvider,
+	useSidebar,
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts";
 
 function CommandSearch() {
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
+	const { t } = useTranslation();
+
+	const navItems = [
+		{ to: "/", icon: Home, label: t("nav.home") },
+		{ to: "/orders", icon: ShoppingCart, label: t("nav.orders") },
+		{ to: "/products", icon: Package, label: t("nav.products") },
+		{ to: "/store", icon: Store, label: t("nav.store") },
+	];
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {
@@ -87,17 +87,17 @@ function CommandSearch() {
 				onClick={() => setOpen(true)}
 			>
 				<Search className="mr-2 h-4 w-4" />
-				<span className="hidden lg:inline-flex">Search products, orders...</span>
-				<span className="inline-flex lg:hidden">Search...</span>
+				<span className="hidden lg:inline-flex">{t("common.search")}...</span>
+				<span className="inline-flex lg:hidden">{t("common.search")}...</span>
 				<kbd className="pointer-events-none absolute right-2 top-2 hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
 					<span className="text-xs">⌘</span>K
 				</kbd>
 			</Button>
 			<CommandDialog open={open} onOpenChange={setOpen}>
-				<CommandInput placeholder="Type a command or search..." />
+				<CommandInput placeholder={t("common.searchPlaceholder")} />
 				<CommandList>
-					<CommandEmpty>No results found.</CommandEmpty>
-					<CommandGroup heading="Navigation">
+					<CommandEmpty>{t("common.noResults")}</CommandEmpty>
+					<CommandGroup heading={t("nav.navigation")}>
 						{navItems.map((item) => (
 							<CommandItem key={item.to} onSelect={() => navigate(item.to)}>
 								<item.icon className="mr-2 h-4 w-4" />
@@ -105,14 +105,14 @@ function CommandSearch() {
 							</CommandItem>
 						))}
 					</CommandGroup>
-					<CommandGroup heading="Quick Actions">
+					<CommandGroup heading={t("nav.quickActions")}>
 						<CommandItem onSelect={() => navigate("/products/new")}>
 							<Package className="mr-2 h-4 w-4" />
-							<span>Create product</span>
+							<span>{t("products.addProduct")}</span>
 						</CommandItem>
 						<CommandItem onSelect={() => navigate("/orders")}>
 							<ShoppingCart className="mr-2 h-4 w-4" />
-							<span>View orders</span>
+							<span>{t("orders.viewOrders")}</span>
 						</CommandItem>
 					</CommandGroup>
 				</CommandList>
@@ -124,6 +124,7 @@ function CommandSearch() {
 function UserMenu() {
 	const { user, logout } = useAuth();
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 
 	const handleLogout = () => {
 		logout();
@@ -152,7 +153,9 @@ function UserMenu() {
 			<DropdownMenuContent className="w-56" align="end" forceMount>
 				<DropdownMenuLabel className="font-normal">
 					<div className="flex flex-col space-y-1">
-						<p className="text-sm font-medium leading-none">{user?.name || "Seller"}</p>
+						<p className="text-sm font-medium leading-none">
+							{user?.name || "Seller"}
+						</p>
 						<p className="text-xs leading-none text-muted-foreground">
 							{user?.email || "seller@yadwy.com"}
 						</p>
@@ -161,12 +164,12 @@ function UserMenu() {
 				<DropdownMenuSeparator />
 				<DropdownMenuItem>
 					<Settings className="mr-2 h-4 w-4" />
-					<span>Settings</span>
+					<span>{t("nav.settings")}</span>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem onClick={handleLogout}>
 					<LogOut className="mr-2 h-4 w-4" />
-					<span>Log out</span>
+					<span>{t("auth.logout")}</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
@@ -176,11 +179,17 @@ function UserMenu() {
 function CollapseButton() {
 	const { state, toggleSidebar } = useSidebar();
 	const isCollapsed = state === "collapsed";
+	const { t } = useTranslation();
 
 	return (
-		<SidebarMenuButton onClick={toggleSidebar} tooltip={isCollapsed ? "Expand (⌘B)" : "Collapse (⌘B)"}>
+		<SidebarMenuButton
+			onClick={toggleSidebar}
+			tooltip={isCollapsed ? t("nav.expand") : t("nav.collapse")}
+		>
 			{isCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
-			<span className="flex-1">{isCollapsed ? "Expand" : "Collapse"}</span>
+			<span className="flex-1">
+				{isCollapsed ? t("nav.expand") : t("nav.collapse")}
+			</span>
 			{!isCollapsed && (
 				<kbd className="ml-auto pointer-events-none h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 flex">
 					<span className="text-xs">⌘</span>B
@@ -192,9 +201,18 @@ function CollapseButton() {
 
 function AppSidebar() {
 	const router = useRouter();
+	const { t, i18n } = useTranslation();
+	const side = i18n.dir() === "rtl" ? "right" : "left";
+
+	const navItems = [
+		{ to: "/", icon: Home, label: t("nav.home") },
+		{ to: "/orders", icon: ShoppingCart, label: t("nav.orders") },
+		{ to: "/products", icon: Package, label: t("nav.products") },
+		{ to: "/store", icon: Store, label: t("nav.store") },
+	];
 
 	return (
-		<Sidebar collapsible="icon">
+		<Sidebar collapsible="icon" side={side}>
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
@@ -246,10 +264,10 @@ function AppSidebar() {
 			<SidebarFooter>
 				<SidebarMenu>
 					<SidebarMenuItem>
-						<SidebarMenuButton asChild tooltip="Settings">
+						<SidebarMenuButton asChild tooltip={t("nav.settings")}>
 							<Link to="/store">
 								<Settings />
-								<span>Settings</span>
+								<span>{t("nav.settings")}</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
@@ -267,6 +285,9 @@ function DashboardHeader() {
 		<header className="flex h-14 shrink-0 items-center justify-end gap-4 border-b px-6">
 			{/* Search */}
 			<CommandSearch />
+
+			{/* Language Switcher */}
+			<LanguageSwitcher />
 
 			{/* Notifications */}
 			<Button variant="ghost" size="icon" className="h-8 w-8">

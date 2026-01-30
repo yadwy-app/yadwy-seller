@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import {
+	createContext,
+	type ReactNode,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 
 export interface User {
 	id: string;
@@ -54,7 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	const login = async (email: string, password: string) => {
 		// Simulate API call
 		await new Promise((resolve) => setTimeout(resolve, 1000));
-		
+
 		// Mock validation - in production, this would call your API
 		if (!email || !password) {
 			throw new Error("Email and password are required");
@@ -73,7 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	const loginWithGoogle = async () => {
 		// Simulate Google OAuth
 		await new Promise((resolve) => setTimeout(resolve, 1500));
-		
+
 		const mockUser: User = {
 			id: "google-1",
 			name: "Yadwy Seller",
@@ -88,7 +94,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	const signup = async (name: string, email: string, password: string) => {
 		// Simulate API call
 		await new Promise((resolve) => setTimeout(resolve, 1000));
-		
+
 		if (!name || !email || !password) {
 			throw new Error("All fields are required");
 		}

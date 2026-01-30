@@ -7,18 +7,20 @@ import {
 	Package,
 	Phone,
 } from "lucide-react";
-import { OrderTimeline } from "@/components/orders";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Separator } from "@/components/ui/separator";
-import { useOrder } from "@/hooks";
+import { OrderTimeline } from "./-components/OrderTimeline";
+import { useOrder } from "./-hooks/useOrders";
 
 export const Route = createFileRoute("/orders/$orderId")({
 	component: OrderDetailPage,
 });
 
 function OrderDetailPage() {
+	const { t } = useTranslation();
 	const { orderId } = Route.useParams();
 	const { data: order, isLoading } = useOrder(orderId);
 
@@ -56,15 +58,15 @@ function OrderDetailPage() {
 	if (!order) {
 		return (
 			<div>
-				<h1 className="text-xl font-semibold mb-4">Order not found</h1>
+				<h1 className="text-xl font-semibold mb-4">{t("orders.noOrders")}</h1>
 				<p className="text-muted-foreground">
-					The order you're looking for doesn't exist.
+					{t("orders.noOrdersDescription")}
 				</p>
 				<Link
 					to="/orders"
 					className="text-primary hover:underline mt-4 inline-block"
 				>
-					← Back to orders
+					← {t("orders.detail.backToOrders")}
 				</Link>
 			</div>
 		);
@@ -93,10 +95,10 @@ function OrderDetailPage() {
 				<div className="flex items-center gap-2">
 					<Button variant="outline">Restock</Button>
 					<Button variant="outline">Return</Button>
-					<Button variant="outline">Edit</Button>
+					<Button variant="outline">{t("common.edit")}</Button>
 					<Button variant="outline">Print</Button>
 					<Button variant="outline">
-						More actions
+						{t("orders.detail.moreActions")}
 						<MoreHorizontal className="w-4 h-4 ml-2" />
 					</Button>
 				</div>
@@ -113,8 +115,8 @@ function OrderDetailPage() {
 								<Package className="w-5 h-5 text-status-success" />
 								<span className="font-medium">
 									{order.fulfillmentStatus === "fulfilled"
-										? "Fulfilled"
-										: "Unfulfilled"}
+										? t("orders.status.fulfilled")
+										: t("orders.status.unfulfilled")}
 								</span>
 							</div>
 							<span className="text-sm text-muted-foreground">
@@ -174,7 +176,9 @@ function OrderDetailPage() {
 
 						<div className="space-y-2 text-sm">
 							<div className="flex justify-between">
-								<span className="text-muted-foreground">Subtotal</span>
+								<span className="text-muted-foreground">
+									{t("orders.detail.subtotal")}
+								</span>
 								<span>
 									{order.items.reduce((sum, item) => sum + item.quantity, 0)}{" "}
 									item
@@ -186,7 +190,9 @@ function OrderDetailPage() {
 								<span>{formatCurrency(order.subtotal)}</span>
 							</div>
 							<div className="flex justify-between">
-								<span className="text-muted-foreground">Shipping</span>
+								<span className="text-muted-foreground">
+									{t("orders.detail.shipping")}
+								</span>
 								<span className="text-muted-foreground">Standard</span>
 								<span>{formatCurrency(order.shipping)}</span>
 							</div>
@@ -197,7 +203,7 @@ function OrderDetailPage() {
 							</div>
 							<Separator className="my-2" />
 							<div className="flex justify-between font-semibold">
-								<span>Total</span>
+								<span>{t("orders.detail.total")}</span>
 								<span></span>
 								<span>{formatCurrency(order.total)}</span>
 							</div>
@@ -207,7 +213,9 @@ function OrderDetailPage() {
 
 						<div className="space-y-2 text-sm">
 							<div className="flex justify-between">
-								<span className="text-muted-foreground">Paid</span>
+								<span className="text-muted-foreground">
+									{t("orders.status.paid")}
+								</span>
 								<span>
 									{formatCurrency(
 										order.paymentStatus === "paid" ? order.total : 0,
@@ -234,7 +242,7 @@ function OrderDetailPage() {
 
 					{/* Timeline */}
 					<Card className="p-5">
-						<h3 className="font-medium mb-4">Timeline</h3>
+						<h3 className="font-medium mb-4">{t("orders.detail.timeline")}</h3>
 
 						{/* Comment input */}
 						<div className="flex gap-3 mb-6 p-3 bg-muted/50 rounded-lg">
@@ -273,14 +281,17 @@ function OrderDetailPage() {
 					{/* Customer */}
 					<Card className="p-5">
 						<div className="flex items-center justify-between mb-3">
-							<h3 className="font-medium">Customer</h3>
+							<h3 className="font-medium">{t("orders.detail.customer")}</h3>
 							<span className="text-xs text-muted-foreground">×</span>
 						</div>
 						<div className="space-y-3">
 							<div>
-								<a href="#" className="text-sm text-primary hover:underline">
+								<button
+									type="button"
+									className="text-sm text-primary hover:underline"
+								>
 									{order.customer.name}
-								</a>
+								</button>
 								<p className="text-xs text-muted-foreground">
 									{order.customer.ordersCount} order
 									{order.customer.ordersCount !== 1 ? "s" : ""}
@@ -289,7 +300,7 @@ function OrderDetailPage() {
 
 							<div>
 								<h4 className="text-xs font-medium text-muted-foreground mb-1">
-									Contact information
+									{t("orders.detail.contactInfo")}
 								</h4>
 								<div className="space-y-1">
 									<a
@@ -311,7 +322,7 @@ function OrderDetailPage() {
 							<div>
 								<div className="flex items-center justify-between mb-1">
 									<h4 className="text-xs font-medium text-muted-foreground">
-										Shipping address
+										{t("orders.detail.shippingAddress")}
 									</h4>
 									<Button variant="ghost" size="icon" className="h-5 w-5">
 										<span className="text-xs text-muted-foreground">✏️</span>
@@ -337,7 +348,11 @@ function OrderDetailPage() {
 										{order.shippingAddress.country}
 									</p>
 									<a
-										href="#"
+										href={`https://maps.google.com/?q=${encodeURIComponent(
+											`${order.shippingAddress.address1}, ${order.shippingAddress.city}`,
+										)}`}
+										target="_blank"
+										rel="noopener noreferrer"
 										className="text-primary text-xs hover:underline flex items-center gap-1"
 									>
 										<MapPin className="w-3 h-3" />
