@@ -55,7 +55,7 @@ export function LoginForm() {
 	const [globalError, setGlobalError] = useState("");
 
 	const formSchema = z.object({
-		email: z.string().email({ message: t("auth.errors.invalidEmail") }),
+		email: z.email({ message: t("auth.errors.invalidEmail") }),
 		password: z.string().min(1, { message: t("auth.errors.passwordRequired") }),
 	});
 
