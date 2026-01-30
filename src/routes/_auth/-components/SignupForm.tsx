@@ -1,13 +1,16 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import * as z from "zod";
+import { FormInput } from "@/components/shared/FormInput";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Form } from "@/components/ui/form";
 import { useAuth } from "@/contexts";
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -36,25 +39,37 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export function SignupForm() {
 	const { t } = useTranslation();
-	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+	const navigate = useNavigate();
+	const { signup, signupWithGoogle } = useAuth();
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-	const [error, setError] = useState("");
-	const { signup, signupWithGoogle } = useAuth();
-	const navigate = useNavigate();
+	const [globalError, setGlobalError] = useState("");
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setError("");
+	const formSchema = z.object({
+		name: z.string().min(1, { message: t("auth.errors.nameRequired") }),
+		email: z.string().email({ message: t("auth.errors.invalidEmail") }),
+		password: z.string().min(8, { message: t("auth.errors.passwordLength") }),
+	});
+
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			name: "",
+			email: "",
+			password: "",
+		},
+	});
+
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		setGlobalError("");
 		setIsLoading(true);
 
 		try {
-			await signup(name, email, password);
+			await signup(values.name, values.email, values.password);
 			navigate({ to: "/" });
 		} catch (err) {
-			setError(
+			setGlobalError(
 				err instanceof Error ? err.message : t("auth.errors.signupFailed"),
 			);
 		} finally {
@@ -63,14 +78,14 @@ export function SignupForm() {
 	};
 
 	const handleGoogleSignup = async () => {
-		setError("");
+		setGlobalError("");
 		setIsGoogleLoading(true);
 
 		try {
 			await signupWithGoogle();
 			navigate({ to: "/" });
 		} catch (err) {
-			setError(
+			setGlobalError(
 				err instanceof Error
 					? err.message
 					: t("auth.errors.googleSignupFailed"),
@@ -84,111 +99,102 @@ export function SignupForm() {
 		<div className="flex flex-col gap-6">
 			<Card className="overflow-hidden p-0">
 				<CardContent className="grid p-0 md:grid-cols-2">
-					<form className="p-6 md:p-8" onSubmit={handleSubmit}>
-						<div className="flex flex-col gap-6">
-							<div className="flex flex-col items-center gap-2 text-center">
-								<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground mb-2">
-									<span className="font-bold text-lg">Y</span>
+					<Form {...form}>
+						<form className="p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
+							<div className="flex flex-col gap-6">
+								<div className="flex flex-col items-center gap-2 text-center">
+									<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground mb-2">
+										<span className="font-bold text-lg">Y</span>
+									</div>
+									<h1 className="text-2xl font-bold">
+										{t("auth.signup.title")}
+									</h1>
+									<p className="text-muted-foreground text-balance text-sm">
+										{t("auth.signup.subtitle")}
+									</p>
 								</div>
-								<h1 className="text-2xl font-bold">{t("auth.signup.title")}</h1>
-								<p className="text-muted-foreground text-balance text-sm">
-									{t("auth.signup.subtitle")}
-								</p>
-							</div>
 
-							{error && (
-								<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-									{error}
-								</div>
-							)}
+								{globalError && (
+									<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+										{globalError}
+									</div>
+								)}
 
-							<div className="grid gap-4">
-								<div className="grid gap-2">
-									<Label htmlFor="name">{t("auth.signup.fullName")}</Label>
-									<Input
-										id="name"
+								<div className="grid gap-4">
+									<FormInput
+										control={form.control}
+										name="name"
+										label={t("auth.signup.fullName")}
 										type="text"
 										placeholder={t("auth.signup.fullNamePlaceholder")}
-										value={name}
-										onChange={(e) => setName(e.target.value)}
-										required
 										disabled={isLoading || isGoogleLoading}
 									/>
-								</div>
-								<div className="grid gap-2">
-									<Label htmlFor="email">{t("auth.signup.email")}</Label>
-									<Input
-										id="email"
+									<FormInput
+										control={form.control}
+										name="email"
+										label={t("auth.signup.email")}
 										type="email"
 										placeholder={t("auth.signup.emailPlaceholder")}
-										value={email}
-										onChange={(e) => setEmail(e.target.value)}
-										required
 										disabled={isLoading || isGoogleLoading}
 									/>
-								</div>
-								<div className="grid gap-2">
-									<Label htmlFor="password">{t("auth.signup.password")}</Label>
-									<Input
-										id="password"
+									<FormInput
+										control={form.control}
+										name="password"
+										label={t("auth.signup.password")}
 										type="password"
 										placeholder={t("auth.signup.passwordPlaceholder")}
-										value={password}
-										onChange={(e) => setPassword(e.target.value)}
-										required
-										minLength={8}
 										disabled={isLoading || isGoogleLoading}
 									/>
+									<Button
+										type="submit"
+										className="w-full"
+										disabled={isLoading || isGoogleLoading}
+									>
+										{isLoading && (
+											<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+										)}
+										{t("auth.signup.createAccountButton")}
+									</Button>
 								</div>
+
+								<div className="relative">
+									<div className="absolute inset-0 flex items-center">
+										<span className="w-full border-t" />
+									</div>
+									<div className="relative flex justify-center text-xs uppercase">
+										<span className="bg-card px-2 text-muted-foreground">
+											{t("auth.signup.orContinueWith")}
+										</span>
+									</div>
+								</div>
+
 								<Button
-									type="submit"
+									variant="outline"
+									type="button"
 									className="w-full"
+									onClick={handleGoogleSignup}
 									disabled={isLoading || isGoogleLoading}
 								>
-									{isLoading && (
+									{isGoogleLoading ? (
 										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									) : (
+										<GoogleIcon className="mr-2 h-4 w-4" />
 									)}
-									{t("auth.signup.createAccountButton")}
+									{t("auth.signup.continueWithGoogle")}
 								</Button>
+
+								<p className="text-center text-sm text-muted-foreground">
+									{t("auth.signup.hasAccount")}{" "}
+									<Link
+										to="/login"
+										className="underline underline-offset-4 hover:text-primary"
+									>
+										{t("auth.signup.login")}
+									</Link>
+								</p>
 							</div>
-
-							<div className="relative">
-								<div className="absolute inset-0 flex items-center">
-									<span className="w-full border-t" />
-								</div>
-								<div className="relative flex justify-center text-xs uppercase">
-									<span className="bg-card px-2 text-muted-foreground">
-										{t("auth.signup.orContinueWith")}
-									</span>
-								</div>
-							</div>
-
-							<Button
-								variant="outline"
-								type="button"
-								className="w-full"
-								onClick={handleGoogleSignup}
-								disabled={isLoading || isGoogleLoading}
-							>
-								{isGoogleLoading ? (
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								) : (
-									<GoogleIcon className="mr-2 h-4 w-4" />
-								)}
-								{t("auth.signup.continueWithGoogle")}
-							</Button>
-
-							<p className="text-center text-sm text-muted-foreground">
-								{t("auth.signup.hasAccount")}{" "}
-								<Link
-									to="/login"
-									className="underline underline-offset-4 hover:text-primary"
-								>
-									{t("auth.signup.login")}
-								</Link>
-							</p>
-						</div>
-					</form>
+						</form>
+					</Form>
 					<div className="relative hidden bg-muted md:block">
 						<div className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-primary/10 to-primary/5">
 							<div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground mb-6">
