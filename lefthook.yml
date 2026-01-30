@@ -1,0 +1,12 @@
+pre-commit:
+  parallel: false
+  commands:
+    format:
+      glob: "*.{js,ts,jsx,tsx,json}"
+      run: npx biome format --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files} && git add {staged_files}
+    lint:
+      glob: "*.{js,ts,jsx,tsx,json}"
+      run: npx biome lint --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files} && git add {staged_files}
+    check:
+      glob: "*.{js,ts,jsx,tsx,json}"
+      run: npx biome check --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}

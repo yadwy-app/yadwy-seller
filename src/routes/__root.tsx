@@ -13,6 +13,7 @@ import { DashboardLayout } from "@/components/layout";
 import { AuthProvider, useAuth } from "@/contexts";
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
 import appCss from "@/styles.css?url";
+import "@/i18n";
 
 interface MyRouterContext {
 	queryClient: QueryClient;

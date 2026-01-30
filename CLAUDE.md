@@ -28,29 +28,62 @@ npm run format       # Format only
 - **Linting/Formatting**: Biome (tabs, double quotes)
 - **Deployment**: Netlify
 
-### Project Structure
+### Project Structure (Colocation Approach)
 
 ```
 src/
-├── routes/           # File-based routing (TanStack Router)
-│   ├── __root.tsx    # Root layout with providers and devtools
-│   ├── index.tsx     # Home page (/)
-│   └── demo/         # Demo routes (can be deleted)
-├── components/       # React components
-│   └── ui/           # shadcn/ui components
-├── integrations/     # Third-party integrations
-│   └── tanstack-query/  # Query client setup and SSR integration
-├── lib/              # Utilities (cn helper, etc.)
-└── routeTree.gen.ts  # Auto-generated route tree (do not edit)
+├── routes/                    # File-based routing with colocated code
+│   ├── __root.tsx             # Root layout with providers and devtools
+│   ├── index.tsx              # Home/Dashboard page (/)
+│   ├── _auth.tsx              # Auth layout route
+│   ├── _auth/                 # Auth routes group
+│   │   ├── -components/       # Auth-specific components
+│   │   ├── login.tsx          # /login
+│   │   └── signup.tsx         # /signup
+│   ├── orders/                # Orders feature
+│   │   ├── -components/       # OrderTable, OrderTimeline
+│   │   ├── -hooks/            # useOrders, useOrder
+│   │   ├── index.tsx          # /orders
+│   │   └── $orderId.tsx       # /orders/:orderId
+│   ├── products/              # Products feature
+│   │   ├── -components/       # ProductTable
+│   │   ├── -hooks/            # useProducts, useProduct
+│   │   ├── index.tsx          # /products
+│   │   ├── $productId.tsx     # /products/:productId
+│   │   └── new.tsx            # /products/new
+│   └── store/                 # Store feature
+│       └── index.tsx          # /store
+├── components/                # SHARED components only
+│   ├── layout/                # DashboardLayout, PageHeader
+│   ├── dashboard/             # StatCard, ActionCard
+│   └── ui/                    # shadcn/ui components
+├── hooks/                     # SHARED hooks only
+│   └── use-mobile.ts
+├── contexts/                  # React contexts
+├── integrations/              # Third-party integrations
+├── lib/                       # Utilities (cn helper, etc.)
+└── routeTree.gen.ts           # Auto-generated route tree (do not edit)
 ```
 
 ### Key Patterns
+
+**Colocation Approach**: Each route/feature has its own folder containing related code:
+- `-components/` → Feature-specific components (dash prefix excludes from routing)
+- `-hooks/` → Feature-specific hooks
+- `-utils/` → Feature-specific utilities
+- Only **shared** components/hooks belong in `src/components/` and `src/hooks/`
+
+**Rules for Colocation**:
+1. If a component/hook is ONLY used within a single route folder → colocate it
+2. If a component/hook is used by 2+ route folders → put in `src/components/` or `src/hooks/`
+3. The `-` prefix tells TanStack Router to ignore folders for route generation
+4. Import colocated items with relative paths: `import { OrderTable } from "./-components/OrderTable"`
 
 **File-Based Routing**: Routes are defined by file structure in `src/routes/`. The route tree is auto-generated to `src/routeTree.gen.ts`.
 
 **SSR + Query Integration**: The router is configured with TanStack Query SSR integration via `setupRouterSsrQueryIntegration()` in `src/router.tsx`.
 
-**Import Alias**: Use `@/` for imports from `src/` directory.
+**Import Alias**: Use `@/` for imports from `src/` directory (for shared code). Use relative paths for colocated code.
 
 ### Adding shadcn Components
 
@@ -62,3 +95,13 @@ pnpm dlx shadcn@latest add <component-name>
 
 - Biome enforces: tabs for indentation, double quotes for strings
 - Files excluded from linting: `routeTree.gen.ts`, `styles.css`
+
+
+## Internationalization (i18n)
+
+- **Library**: `react-i18next`
+- **Configuration**: `src/i18n/index.ts`
+- **Locales**: `src/i18n/locales/` (en.json, ar.json)
+- **Convention**: Use `useTranslation` hook in components.
+- **Keys**: Nested keys grouping by feature (e.g., `auth.login.title`, `products.new.name`).
+- **RTL Support**: Arabic (ar) sets `document.dir = "rtl"`.

@@ -1,28 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Globe, Palette, Settings, Store as StoreIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/layout";
 import { Card } from "@/components/ui/card";
 
-export const Route = createFileRoute("/store")({
+export const Route = createFileRoute("/store/")({
 	component: StorePage,
 });
 
 function StorePage() {
+	const { t } = useTranslation();
+
 	return (
 		<div>
-			<PageHeader
-				title="Store"
-				subtitle="Manage your store settings and appearance"
-			/>
+			<PageHeader title={t("store.title")} subtitle={t("store.subtitle")} />
 
 			<div className="bg-card rounded-lg border border-border p-8 text-center">
 				<StoreIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-				<h2 className="text-lg font-semibold mb-2">
-					Store settings coming soon
-				</h2>
+				<h2 className="text-lg font-semibold mb-2">{t("store.comingSoon")}</h2>
 				<p className="text-muted-foreground max-w-md mx-auto">
-					This section will allow you to customize your store appearance, manage
-					settings, and configure your storefront.
+					{t("store.comingSoonDescription")}
 				</p>
 			</div>
 
@@ -31,30 +28,30 @@ function StorePage() {
 				<Card className="p-5 opacity-50">
 					<div className="flex items-center gap-3 mb-3">
 						<Settings className="w-5 h-5 text-muted-foreground" />
-						<h3 className="font-medium">General Settings</h3>
+						<h3 className="font-medium">{t("store.generalSettings")}</h3>
 					</div>
 					<p className="text-sm text-muted-foreground">
-						Store name, contact info, and business details
+						{t("store.generalSettingsDescription")}
 					</p>
 				</Card>
 
 				<Card className="p-5 opacity-50">
 					<div className="flex items-center gap-3 mb-3">
 						<Palette className="w-5 h-5 text-muted-foreground" />
-						<h3 className="font-medium">Appearance</h3>
+						<h3 className="font-medium">{t("store.appearance")}</h3>
 					</div>
 					<p className="text-sm text-muted-foreground">
-						Customize your store's look and feel
+						{t("store.appearanceDescription")}
 					</p>
 				</Card>
 
 				<Card className="p-5 opacity-50">
 					<div className="flex items-center gap-3 mb-3">
 						<Globe className="w-5 h-5 text-muted-foreground" />
-						<h3 className="font-medium">Domains</h3>
+						<h3 className="font-medium">{t("store.domains")}</h3>
 					</div>
 					<p className="text-sm text-muted-foreground">
-						Manage custom domains and URLs
+						{t("store.domainsDescription")}
 					</p>
 				</Card>
 			</div>
