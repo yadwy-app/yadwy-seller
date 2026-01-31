@@ -12,7 +12,7 @@ import type {
 export const authService = {
 	login: async (data: LoginRequestDto): Promise<LoginResponseDto> => {
 		const response = await httpClient.post<LoginResponseDto>(
-			"/auth/login",
+			"/v1/auth/login",
 			data,
 		);
 
@@ -27,7 +27,7 @@ export const authService = {
 		data: RegisterSellerRequestDto,
 	): Promise<RegisterSellerResponseDto> => {
 		const response = await httpClient.post<RegisterSellerResponseDto>(
-			"/auth/register/seller",
+			"/v1/auth/register/seller",
 			data,
 		);
 
@@ -45,7 +45,7 @@ export const authService = {
 		}
 
 		const response = await httpClient.post<RefreshTokenResponseDto>(
-			"/auth/refresh",
+			"/v1/auth/refresh",
 			{
 				refreshToken,
 			},

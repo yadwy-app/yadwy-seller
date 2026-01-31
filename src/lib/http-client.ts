@@ -142,7 +142,7 @@ httpClient.addResponseInterceptor(async (response) => {
 
 				const refreshResponse = await refreshClient.post<{
 					accessToken: string;
-				}>("/auth/refresh", {
+				}>("/v1/auth/refresh", {
 					refreshToken,
 				});
 
