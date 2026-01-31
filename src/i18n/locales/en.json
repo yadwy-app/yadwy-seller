@@ -171,16 +171,15 @@
 		"domainsDescription": "Manage custom domains and URLs"
 	},
 	"auth": {
+		"logout": "Logout",
 		"login": {
 			"title": "Welcome back",
 			"subtitle": "Login to your Yadwy seller account",
-			"email": "Email",
-			"emailPlaceholder": "seller@example.com",
+			"phoneNumber": "Phone Number",
+			"phoneNumberPlaceholder": "01012345678",
 			"password": "Password",
 			"forgotPassword": "Forgot password?",
 			"loginButton": "Login",
-			"orContinueWith": "Or continue with",
-			"continueWithGoogle": "Continue with Google",
 			"noAccount": "Don't have an account?",
 			"signUp": "Sign up",
 			"termsNotice": "By continuing, you agree to our",
@@ -193,13 +192,11 @@
 			"subtitle": "Start selling on Yadwy today",
 			"fullName": "Full name",
 			"fullNamePlaceholder": "John Doe",
-			"email": "Email",
-			"emailPlaceholder": "seller@example.com",
+			"phoneNumber": "Phone Number",
+			"phoneNumberPlaceholder": "01012345678",
 			"password": "Password",
 			"passwordPlaceholder": "At least 8 characters",
 			"createAccountButton": "Create account",
-			"orContinueWith": "Or continue with",
-			"continueWithGoogle": "Continue with Google",
 			"hasAccount": "Already have an account?",
 			"login": "Login",
 			"termsNotice": "By creating an account, you agree to our",
@@ -214,10 +211,12 @@
 			"joinDescription": "Create your seller account and start reaching customers across Egypt."
 		},
 		"errors": {
-			"loginFailed": "Login failed",
-			"signupFailed": "Signup failed",
-			"googleLoginFailed": "Google login failed",
-			"googleSignupFailed": "Google signup failed"
+			"phoneRequired": "Phone number is required",
+			"passwordRequired": "Password is required",
+			"nameRequired": "Name is required",
+			"passwordLength": "Password must be at least 8 characters",
+			"loginFailed": "Login failed. Please check your credentials.",
+			"signupFailed": "Signup failed. Please try again."
 		}
 	},
 	"layout": {
