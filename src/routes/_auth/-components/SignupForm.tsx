@@ -8,10 +8,19 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import * as z from "zod";
 import { FormInput } from "@/components/shared/FormInput";
+import { PhoneInput } from "@/components/shared/PhoneInput";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { useAuth } from "@/contexts";
+import { egyptianPhoneSchema } from "@/lib/validations/phone";
 
 export function SignupForm() {
 	const { t } = useTranslation();
@@ -23,7 +32,7 @@ export function SignupForm() {
 
 	const formSchema = z.object({
 		name: z.string().min(1, { message: t("auth.errors.nameRequired") }),
-		phoneNumber: z.string().min(1, { message: t("auth.errors.phoneRequired") }),
+		phoneNumber: egyptianPhoneSchema,
 		password: z.string().min(8, { message: t("auth.errors.passwordLength") }),
 	});
 
@@ -86,13 +95,22 @@ export function SignupForm() {
 										placeholder={t("auth.signup.fullNamePlaceholder")}
 										disabled={isLoading}
 									/>
-									<FormInput
+									<FormField
 										control={form.control}
 										name="phoneNumber"
-										label={t("auth.signup.phoneNumber")}
-										type="tel"
-										placeholder={t("auth.signup.phoneNumberPlaceholder")}
-										disabled={isLoading}
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>{t("auth.signup.phoneNumber")}</FormLabel>
+												<FormControl>
+													<PhoneInput
+														{...field}
+														disabled={isLoading}
+														placeholder="1012345678"
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
 									/>
 									<FormInput
 										control={form.control}
