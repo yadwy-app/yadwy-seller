@@ -1,28 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-	getDashboardStats,
-	getOrderById,
-	mockOrders,
-} from "@/data/mock-orders";
-import type { DashboardStats, Order } from "@/types";
+import { getDashboardStats } from "@/data/mock-orders";
+import { type OrdersQueryParams, ordersService } from "@/services/orders";
+import type { DashboardStats } from "@/types";
 
-export function useOrders() {
-	return useQuery<Order[]>({
-		queryKey: ["orders"],
-		queryFn: async () => {
-			await new Promise((resolve) => setTimeout(resolve, 200));
-			return mockOrders;
-		},
+export function useOrders(params?: OrdersQueryParams) {
+	return useQuery({
+		queryKey: ["orders", params],
+		queryFn: () => ordersService.getOrders(params),
 	});
 }
 
 export function useOrder(id: string) {
-	return useQuery<Order | undefined>({
+	return useQuery({
 		queryKey: ["orders", id],
-		queryFn: async () => {
-			await new Promise((resolve) => setTimeout(resolve, 100));
-			return getOrderById(id);
-		},
+		queryFn: () => ordersService.getOrderById(id),
 		enabled: !!id,
 	});
 }

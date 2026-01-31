@@ -7,8 +7,8 @@ import {
 	useLogoutMutation,
 	useRegisterSellerMutation,
 } from "@/hooks/useAuthMutations";
-import { authService } from "@/services/auth.service";
 import type { User } from "@/services/auth/types";
+import { authService } from "@/services/auth.service";
 
 interface AuthContextType {
 	user: User | null;
