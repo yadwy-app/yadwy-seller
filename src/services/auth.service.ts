@@ -7,7 +7,7 @@ import type {
 	RegisterSellerRequestDto,
 	RegisterSellerResponseDto,
 	User,
-} from "./types";
+} from "./auth/types";
 
 export const authService = {
 	login: async (data: LoginRequestDto): Promise<LoginResponseDto> => {

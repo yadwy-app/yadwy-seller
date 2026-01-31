@@ -3,28 +3,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { createContext, type ReactNode, useContext } from "react";
 import {
-	useGoogleLoginMutation,
 	useLoginMutation,
 	useLogoutMutation,
-	useSignupMutation,
+	useRegisterSellerMutation,
 } from "@/hooks/useAuthMutations";
 import { authService } from "@/services/auth.service";
-
-export interface User {
-	id: string;
-	name: string;
-	email: string;
-	avatar?: string;
-}
+import type { User } from "@/services/auth/types";
 
 interface AuthContextType {
 	user: User | null;
 	isLoading: boolean;
 	isAuthenticated: boolean;
-	login: (email: string, password: string) => Promise<void>;
-	loginWithGoogle: () => Promise<void>;
-	signup: (name: string, email: string, password: string) => Promise<void>;
-	signupWithGoogle: () => Promise<void>;
+	login: (phoneNumber: string, password: string) => Promise<void>;
+	registerSeller: (
+		name: string,
+		phoneNumber: string,
+		password: string,
+	) => Promise<void>;
 	logout: () => void;
 }
 
@@ -44,13 +39,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
 	const { mutateAsync: loginMutation } = useLoginMutation();
-
-	const { mutateAsync: signupMutation } = useSignupMutation();
-
-	const { mutateAsync: loginWithGoogle } = useGoogleLoginMutation();
-
-	const { mutateAsync: signupWithGoogle } = useGoogleLoginMutation();
-
+	const { mutateAsync: registerSellerMutation } = useRegisterSellerMutation();
 	const { mutate: logout } = useLogoutMutation();
 
 	const { data: user, isLoading } = useQuery({
@@ -60,20 +49,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		staleTime: 5 * 60 * 1000,
 	});
 
-	const login = async (email: string, password: string) => {
-		await loginMutation({ email, password });
+	const login = async (phoneNumber: string, password: string) => {
+		await loginMutation({ phoneNumber, password });
 	};
 
-	const signup = async (name: string, email: string, password: string) => {
-		await signupMutation({ name, email, password });
-	};
-
-	const loginWithGoogleWrapper = async () => {
-		await loginWithGoogle();
-	};
-
-	const signupWithGoogleWrapper = async () => {
-		await signupWithGoogle();
+	const registerSeller = async (
+		name: string,
+		phoneNumber: string,
+		password: string,
+	) => {
+		await registerSellerMutation({ name, phoneNumber, password });
 	};
 
 	return (
@@ -83,9 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 				isLoading,
 				isAuthenticated: !!user,
 				login,
-				loginWithGoogle: loginWithGoogleWrapper,
-				signup,
-				signupWithGoogle: signupWithGoogleWrapper,
+				registerSeller,
 				logout,
 			}}
 		>

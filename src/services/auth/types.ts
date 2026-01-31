@@ -47,4 +47,5 @@ export interface User {
 	name: string;
 	phoneNumber: string;
 	roles: string[];
+	avatar?: string; // Optional avatar for UI
 }

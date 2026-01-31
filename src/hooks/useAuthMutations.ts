@@ -1,36 +1,31 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-	authService,
-	type LoginDTO,
-	type SignupDTO,
-} from "@/services/auth.service";
+import { authService } from "@/services/auth.service";
+import type {
+	LoginRequestDto,
+	RegisterSellerRequestDto,
+} from "@/services/auth/types";
 
 export const useLoginMutation = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: (data: LoginDTO) => authService.login(data),
-		onSuccess: (user) => {
-			queryClient.setQueryData(["currentUser"], user);
+		mutationFn: (data: LoginRequestDto) => authService.login(data),
+		onSuccess: () => {
+			// Store tokens are already handled in the service
+			// Invalidate current user query to refetch user data
+			queryClient.invalidateQueries({ queryKey: ["currentUser"] });
 		},
 	});
 };
 
-export const useSignupMutation = () => {
+export const useRegisterSellerMutation = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: (data: SignupDTO) => authService.signup(data),
-		onSuccess: (user) => {
-			queryClient.setQueryData(["currentUser"], user);
-		},
-	});
-};
-
-export const useGoogleLoginMutation = () => {
-	const queryClient = useQueryClient();
-	return useMutation({
-		mutationFn: () => authService.loginWithGoogle(),
-		onSuccess: (user) => {
-			queryClient.setQueryData(["currentUser"], user);
+		mutationFn: (data: RegisterSellerRequestDto) =>
+			authService.registerSeller(data),
+		onSuccess: () => {
+			// Store tokens are already handled in the service
+			// Invalidate current user query to refetch user data
+			queryClient.invalidateQueries({ queryKey: ["currentUser"] });
 		},
 	});
 };
