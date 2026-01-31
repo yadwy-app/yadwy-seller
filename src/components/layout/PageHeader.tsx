@@ -28,7 +28,10 @@ export function PageHeader({
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
+						role="img"
+						aria-label="Back arrow"
 					>
+						<title>Back arrow</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"

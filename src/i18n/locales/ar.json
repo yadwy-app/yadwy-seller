@@ -171,16 +171,15 @@
 		"domainsDescription": "إدارة النطاقات المخصصة وعناوين URL"
 	},
 	"auth": {
+		"logout": "تسجيل الخروج",
 		"login": {
 			"title": "مرحباً بعودتك",
 			"subtitle": "سجل الدخول إلى حساب بائع يدوي",
-			"email": "البريد الإلكتروني",
-			"emailPlaceholder": "seller@example.com",
+			"phoneNumber": "رقم الهاتف",
+			"phoneNumberPlaceholder": "01012345678",
 			"password": "كلمة المرور",
 			"forgotPassword": "نسيت كلمة المرور؟",
 			"loginButton": "تسجيل الدخول",
-			"orContinueWith": "أو تابع باستخدام",
-			"continueWithGoogle": "المتابعة باستخدام Google",
 			"noAccount": "ليس لديك حساب؟",
 			"signUp": "إنشاء حساب",
 			"termsNotice": "بالمتابعة، فإنك توافق على",
@@ -193,13 +192,11 @@
 			"subtitle": "ابدأ البيع على يدوي اليوم",
 			"fullName": "الاسم الكامل",
 			"fullNamePlaceholder": "أحمد محمد",
-			"email": "البريد الإلكتروني",
-			"emailPlaceholder": "seller@example.com",
+			"phoneNumber": "رقم الهاتف",
+			"phoneNumberPlaceholder": "01012345678",
 			"password": "كلمة المرور",
 			"passwordPlaceholder": "8 أحرف على الأقل",
 			"createAccountButton": "إنشاء حساب",
-			"orContinueWith": "أو تابع باستخدام",
-			"continueWithGoogle": "المتابعة باستخدام Google",
 			"hasAccount": "لديك حساب بالفعل؟",
 			"login": "تسجيل الدخول",
 			"termsNotice": "بإنشاء حساب، فإنك توافق على",
@@ -214,10 +211,12 @@
 			"joinDescription": "أنشئ حساب البائع الخاص بك وابدأ في الوصول إلى العملاء في جميع أنحاء مصر."
 		},
 		"errors": {
-			"loginFailed": "فشل تسجيل الدخول",
-			"signupFailed": "فشل إنشاء الحساب",
-			"googleLoginFailed": "فشل تسجيل الدخول بـ Google",
-			"googleSignupFailed": "فشل إنشاء الحساب بـ Google"
+			"phoneRequired": "رقم الهاتف مطلوب",
+			"passwordRequired": "كلمة المرور مطلوبة",
+			"nameRequired": "الاسم مطلوب",
+			"passwordLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+			"loginFailed": "فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد.",
+			"signupFailed": "فشل إنشاء الحساب. يرجى المحاولة مرة أخرى."
 		}
 	},
 	"layout": {

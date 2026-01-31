@@ -157,7 +157,7 @@ function UserMenu() {
 							{user?.name || "Seller"}
 						</p>
 						<p className="text-xs leading-none text-muted-foreground">
-							{user?.email || "seller@yadwy.com"}
+							{user?.phoneNumber || "seller@yadwy.com"}
 						</p>
 					</div>
 				</DropdownMenuLabel>

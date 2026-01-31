@@ -1,10 +1,24 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-export function getContext() {
-	const queryClient = new QueryClient();
-	return {
-		queryClient,
-	};
+export function createQueryClient() {
+	return new QueryClient({
+		defaultOptions: {
+			queries: {
+				// Stale time of 5 minutes
+				staleTime: 5 * 60 * 1000,
+				// Cache time of 10 minutes
+				gcTime: 10 * 60 * 1000,
+				// Retry failed requests 3 times
+				retry: 3,
+				// Refetch on window focus only if data is stale
+				refetchOnWindowFocus: "always",
+			},
+			mutations: {
+				// Retry failed mutations once
+				retry: 1,
+			},
+		},
+	});
 }
 
 export function Provider({

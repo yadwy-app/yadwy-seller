@@ -1,16 +1,7 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { SignupForm } from "./-components/SignupForm";
 
 export const Route = createFileRoute("/_auth/signup")({
-	beforeLoad: () => {
-		// Check if user is already logged in (SSR-safe)
-		if (typeof window !== "undefined") {
-			const storedUser = localStorage.getItem("yadwy_user");
-			if (storedUser) {
-				throw redirect({ to: "/" });
-			}
-		}
-	},
 	component: SignupPage,
 });
 
