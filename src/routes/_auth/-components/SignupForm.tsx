@@ -48,7 +48,7 @@ export function SignupForm() {
 
 	const formSchema = z.object({
 		name: z.string().min(1, { message: t("auth.errors.nameRequired") }),
-		email: z.string().email({ message: t("auth.errors.invalidEmail") }),
+		email: z.email({ message: t("auth.errors.invalidEmail") }),
 		password: z.string().min(8, { message: t("auth.errors.passwordLength") }),
 	});
 
