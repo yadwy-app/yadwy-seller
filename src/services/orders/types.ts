@@ -1,6 +1,50 @@
-// Order-specific types following frontend architecture rules
+// Order-specific types matching backend API response
 
-// Status types specific to orders service
+// Localized text (ar/en)
+export interface LocalizedText {
+	ar: string;
+	en: string;
+}
+
+// Order status from backend
+export type SellerOrderStatus =
+	| "RECEIVED"
+	| "CONFIRMED"
+	| "SHIPPED"
+	| "DELIVERED"
+	| "CANCELLED";
+
+// Order line item from backend
+export interface OrderLine {
+	productId: number;
+	productName: LocalizedText;
+	unitPrice: number;
+	quantity: number;
+	subtotal: number;
+}
+
+// Seller order from backend API
+export interface SellerOrder {
+	id: number;
+	orderId: number;
+	sellerId: number;
+	status: SellerOrderStatus;
+	lines: OrderLine[];
+	subtotal: number;
+	shippingFee: number;
+	total: number;
+	createdAt: string;
+	updatedAt: string;
+}
+
+// Query params for fetching orders
+export interface OrdersQueryParams {
+	page?: number;
+	size?: number;
+	sort?: string;
+}
+
+// Legacy types kept for compatibility (can be removed later)
 export type PaymentStatus =
 	| "paid"
 	| "pending"
@@ -63,8 +107,6 @@ export interface Order {
 	fulfillmentStatus: FulfillmentStatus;
 	createdAt: string;
 	updatedAt: string;
-
-	// Additional properties expected by components
 	customer: OrderCustomer;
 	items: OrderItem[];
 	subtotal: number;
@@ -88,10 +130,4 @@ export interface OrdersResponse {
 	totalPages: number;
 	last: boolean;
 	first: boolean;
-}
-
-export interface OrdersQueryParams {
-	page?: number;
-	size?: number;
-	sort?: string;
 }

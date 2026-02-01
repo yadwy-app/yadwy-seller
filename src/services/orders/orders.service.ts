@@ -1,23 +1,21 @@
 import { httpClient } from "@/lib/http-client";
-import type { Order, OrdersQueryParams, OrdersResponse } from "./types";
+import type { OrdersQueryParams, SellerOrder } from "./types";
 
 export const ordersService = {
 	/**
-	 * Get paginated orders for the current seller
+	 * Get orders for the current seller
+	 * Backend returns a flat array (not paginated wrapper)
 	 */
-	getOrders: async (
-		params: OrdersQueryParams = {},
-	): Promise<OrdersResponse> => {
-		const { page = 0, size = 10, sort = "createdAt,desc" } = params;
+	getOrders: async (params: OrdersQueryParams = {}): Promise<SellerOrder[]> => {
+		const { page = 0, size = 10 } = params;
 
 		try {
-			const response = await httpClient.get<OrdersResponse>(
+			const response = await httpClient.get<SellerOrder[]>(
 				"/v1/sellers/orders",
 				{
 					params: {
 						page,
 						size,
-						sort,
 					},
 				},
 			);
@@ -32,8 +30,8 @@ export const ordersService = {
 	/**
 	 * Get a single order by ID
 	 */
-	getOrderById: async (orderId: string): Promise<Order> => {
-		const response = await httpClient.get<Order>(
+	getOrderById: async (orderId: string): Promise<SellerOrder> => {
+		const response = await httpClient.get<SellerOrder>(
 			`/v1/sellers/orders/${orderId}`,
 		);
 

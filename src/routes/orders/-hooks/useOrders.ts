@@ -1,17 +1,36 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getDashboardStats } from "@/data/mock-orders";
-import { type OrdersQueryParams, ordersService } from "@/services/orders";
+import {
+	type OrdersQueryParams,
+	ordersService,
+	type SellerOrder,
+} from "@/services/orders";
 import type { DashboardStats } from "@/types";
 
-export function useOrders(params?: OrdersQueryParams) {
-	return useQuery({
+const PAGE_SIZE = 20;
+
+export function useOrders(params?: Omit<OrdersQueryParams, "page">) {
+	return useInfiniteQuery<SellerOrder[]>({
 		queryKey: ["orders", params],
-		queryFn: () => ordersService.getOrders(params),
+		queryFn: ({ pageParam }) =>
+			ordersService.getOrders({
+				...params,
+				page: pageParam as number,
+				size: PAGE_SIZE,
+			}),
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+			// If we got fewer items than page size, we've reached the end
+			if (lastPage.length < PAGE_SIZE) {
+				return undefined;
+			}
+			return (lastPageParam as number) + 1;
+		},
 	});
 }
 
 export function useOrder(id: string) {
-	return useQuery({
+	return useQuery<SellerOrder>({
 		queryKey: ["orders", id],
 		queryFn: () => ordersService.getOrderById(id),
 		enabled: !!id,
