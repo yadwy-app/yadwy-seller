@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { authService } from "@/services/auth.service";
 import type {
 	LoginRequestDto,
 	RegisterSellerRequestDto,
 } from "@/services/auth/types";
+import { authService } from "@/services/auth.service";
 
 export const useLoginMutation = () => {
 	const queryClient = useQueryClient();

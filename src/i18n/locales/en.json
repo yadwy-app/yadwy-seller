@@ -95,6 +95,14 @@
 			"unfulfilled": "Unfulfilled",
 			"partiallyFulfilled": "Partially fulfilled"
 		},
+		"empty": {
+			"title": "No orders yet",
+			"description": "When customers place orders, they will appear here. You'll be able to track and manage all your orders from this page.",
+			"infoTitle": "What happens when you get an order?",
+			"info1": "You'll receive a notification",
+			"info2": "Order details will appear in this list",
+			"info3": "You can track payment and fulfillment status"
+		},
 		"noOrders": "No orders yet",
 		"noOrdersDescription": "When you receive orders, they will appear here."
 	},

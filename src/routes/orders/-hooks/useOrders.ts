@@ -1,28 +1,38 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { getDashboardStats } from "@/data/mock-orders";
 import {
-	getDashboardStats,
-	getOrderById,
-	mockOrders,
-} from "@/data/mock-orders";
-import type { DashboardStats, Order } from "@/types";
+	type OrdersQueryParams,
+	ordersService,
+	type SellerOrder,
+} from "@/services/orders";
+import type { DashboardStats } from "@/types";
 
-export function useOrders() {
-	return useQuery<Order[]>({
-		queryKey: ["orders"],
-		queryFn: async () => {
-			await new Promise((resolve) => setTimeout(resolve, 200));
-			return mockOrders;
+const PAGE_SIZE = 20;
+
+export function useOrders(params?: Omit<OrdersQueryParams, "page">) {
+	return useInfiniteQuery<SellerOrder[]>({
+		queryKey: ["orders", params],
+		queryFn: ({ pageParam }) =>
+			ordersService.getOrders({
+				...params,
+				page: pageParam as number,
+				size: PAGE_SIZE,
+			}),
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+			// If we got fewer items than page size, we've reached the end
+			if (lastPage.length < PAGE_SIZE) {
+				return undefined;
+			}
+			return (lastPageParam as number) + 1;
 		},
 	});
 }
 
 export function useOrder(id: string) {
-	return useQuery<Order | undefined>({
+	return useQuery<SellerOrder>({
 		queryKey: ["orders", id],
-		queryFn: async () => {
-			await new Promise((resolve) => setTimeout(resolve, 100));
-			return getOrderById(id);
-		},
+		queryFn: () => ordersService.getOrderById(id),
 		enabled: !!id,
 	});
 }
