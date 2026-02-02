@@ -142,7 +142,7 @@ export function ProductTable({
 							</Link>
 						</TableCell>
 						<TableCell>
-							<StatusBadge status={product.status} type="product" />
+							<StatusBadge status={product.status} />
 						</TableCell>
 						<TableCell>
 							<span

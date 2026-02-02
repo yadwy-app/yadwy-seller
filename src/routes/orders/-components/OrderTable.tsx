@@ -81,24 +81,6 @@ export function OrderTable({
 		return `${order.lines[0].productName[lang]} +${order.lines.length - 1}`;
 	};
 
-	// Map backend status to fulfillment status for badge
-	const mapStatusToFulfillment = (status: SellerOrder["status"]) => {
-		switch (status) {
-			case "RECEIVED":
-				return "unfulfilled";
-			case "CONFIRMED":
-				return "in_progress";
-			case "SHIPPED":
-				return "in_progress";
-			case "DELIVERED":
-				return "fulfilled";
-			case "CANCELLED":
-				return "on_hold";
-			default:
-				return "unfulfilled";
-		}
-	};
-
 	const isAllSelected =
 		orders.length > 0 && selectedOrders.length === orders.length;
 	const isSomeSelected =
@@ -199,10 +181,7 @@ export function OrderTable({
 							</div>
 						</TableCell>
 						<TableCell>
-							<StatusBadge
-								status={mapStatusToFulfillment(order.status)}
-								type="fulfillment"
-							/>
+							<StatusBadge status={order.status} />
 						</TableCell>
 						<TableCell className="text-right font-medium">
 							{formatCurrency(order.total)}
