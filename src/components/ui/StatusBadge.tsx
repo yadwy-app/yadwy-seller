@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import type { FulfillmentStatus, PaymentStatus, ProductStatus } from "@/types";
+import type { FulfillmentStatus, PaymentStatus } from "@/services/orders/types";
+import type { ProductStatus } from "@/types";
 
 interface StatusBadgeProps {
 	status: ProductStatus | PaymentStatus | FulfillmentStatus;
@@ -36,6 +37,11 @@ const statusConfig: Record<
 		label: "Payment pending",
 		variant: "outline",
 		dotColor: "bg-status-warning",
+	},
+	failed: {
+		label: "Payment failed",
+		variant: "destructive",
+		dotColor: "bg-destructive",
 	},
 	refunded: {
 		label: "Refunded",

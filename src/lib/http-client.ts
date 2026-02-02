@@ -5,6 +5,10 @@ type HttpClientConfig = {
 
 type GenericResponse = unknown;
 
+type RequestOptions = RequestInit & {
+	params?: Record<string, string | number | boolean | undefined>;
+};
+
 class HttpClient {
 	private baseURL: string;
 	private headers: Record<string, string>;
@@ -37,16 +41,37 @@ class HttpClient {
 		this.interceptors.response.push(callback);
 	}
 
+	// Build URL with query parameters
+	private buildUrl(
+		endpoint: string,
+		params?: Record<string, string | number | boolean | undefined>,
+	): string {
+		const url = `${this.baseURL}${endpoint}`;
+		if (!params) return url;
+
+		const searchParams = new URLSearchParams();
+		for (const [key, value] of Object.entries(params)) {
+			if (value !== undefined && value !== null) {
+				searchParams.append(key, String(value));
+			}
+		}
+
+		const queryString = searchParams.toString();
+		return queryString ? `${url}?${queryString}` : url;
+	}
+
 	// Base request method
 	private async request<T = GenericResponse>(
 		endpoint: string,
-		options: RequestInit = {},
+		options: RequestOptions = {},
 	): Promise<T> {
+		const { params, ...fetchOptions } = options;
+
 		let config: RequestInit = {
-			...options,
+			...fetchOptions,
 			headers: {
 				...this.headers,
-				...(options.headers || {}),
+				...(fetchOptions.headers || {}),
 			},
 		};
 
@@ -55,7 +80,7 @@ class HttpClient {
 			config = await interceptor(config);
 		}
 
-		const url = `${this.baseURL}${endpoint}`;
+		const url = this.buildUrl(endpoint, params);
 		let response = await fetch(url, config);
 
 		// Run response interceptors
@@ -78,14 +103,14 @@ class HttpClient {
 	}
 
 	// HTTP Methods
-	public get<T = GenericResponse>(endpoint: string, options?: RequestInit) {
+	public get<T = GenericResponse>(endpoint: string, options?: RequestOptions) {
 		return this.request<T>(endpoint, { ...options, method: "GET" });
 	}
 
 	public post<T = GenericResponse>(
 		endpoint: string,
 		data?: unknown,
-		options?: RequestInit,
+		options?: RequestOptions,
 	) {
 		return this.request<T>(endpoint, {
 			...options,
@@ -97,7 +122,7 @@ class HttpClient {
 	public put<T = GenericResponse>(
 		endpoint: string,
 		data?: unknown,
-		options?: RequestInit,
+		options?: RequestOptions,
 	) {
 		return this.request<T>(endpoint, {
 			...options,
@@ -106,7 +131,10 @@ class HttpClient {
 		});
 	}
 
-	public delete<T = GenericResponse>(endpoint: string, options?: RequestInit) {
+	public delete<T = GenericResponse>(
+		endpoint: string,
+		options?: RequestOptions,
+	) {
 		return this.request<T>(endpoint, { ...options, method: "DELETE" });
 	}
 }

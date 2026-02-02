@@ -105,3 +105,6 @@ pnpm dlx shadcn@latest add <component-name>
 - **Convention**: Use `useTranslation` hook in components.
 - **Keys**: Nested keys grouping by feature (e.g., `auth.login.title`, `products.new.name`).
 - **RTL Support**: Arabic (ar) sets `document.dir = "rtl"`.
+
+## Shadcn
+- use shadcn commpments whenever possible

@@ -1,18 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	ArrowLeft,
-	Mail,
-	MapPin,
-	MoreHorizontal,
-	Package,
-	Phone,
-} from "lucide-react";
+import { ArrowLeft, Package } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Separator } from "@/components/ui/separator";
-import { OrderTimeline } from "./-components/OrderTimeline";
+import type { SellerOrder } from "@/services/orders";
 import { useOrder } from "./-hooks/useOrders";
 
 export const Route = createFileRoute("/orders/$orderId")({
@@ -20,7 +13,7 @@ export const Route = createFileRoute("/orders/$orderId")({
 });
 
 function OrderDetailPage() {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { orderId } = Route.useParams();
 	const { data: order, isLoading } = useOrder(orderId);
 
@@ -42,6 +35,47 @@ function OrderDetailPage() {
 			minute: "2-digit",
 			hour12: true,
 		});
+	};
+
+	// Get localized product name based on current language
+	const getLocalizedName = (name: { ar: string; en: string }): string => {
+		return i18n.language === "ar" ? name.ar : name.en;
+	};
+
+	// Map backend status to fulfillment status for badge
+	const mapStatusToFulfillment = (status: SellerOrder["status"]) => {
+		switch (status) {
+			case "RECEIVED":
+				return "unfulfilled";
+			case "CONFIRMED":
+				return "in_progress";
+			case "SHIPPED":
+				return "in_progress";
+			case "DELIVERED":
+				return "fulfilled";
+			case "CANCELLED":
+				return "on_hold";
+			default:
+				return "unfulfilled";
+		}
+	};
+
+	// Get status display text
+	const getStatusText = (status: SellerOrder["status"]) => {
+		switch (status) {
+			case "RECEIVED":
+				return "Received";
+			case "CONFIRMED":
+				return "Confirmed";
+			case "SHIPPED":
+				return "Shipped";
+			case "DELIVERED":
+				return "Delivered";
+			case "CANCELLED":
+				return "Cancelled";
+			default:
+				return status;
+		}
 	};
 
 	if (isLoading) {
@@ -72,6 +106,8 @@ function OrderDetailPage() {
 		);
 	}
 
+	const totalItems = order.lines.reduce((sum, line) => sum + line.quantity, 0);
+
 	return (
 		<div>
 			{/* Header */}
@@ -84,23 +120,15 @@ function OrderDetailPage() {
 				</Link>
 				<div className="flex-1">
 					<div className="flex items-center gap-3">
-						<h1 className="text-xl font-semibold">{order.orderNumber}</h1>
-						<StatusBadge status={order.paymentStatus} type="payment" />
-						<StatusBadge status={order.fulfillmentStatus} type="fulfillment" />
+						<h1 className="text-xl font-semibold">Order #{order.orderId}</h1>
+						<StatusBadge
+							status={mapStatusToFulfillment(order.status)}
+							type="fulfillment"
+						/>
 					</div>
 					<p className="text-sm text-muted-foreground mt-1">
-						{formatDate(order.createdAt)} from {order.channel}
+						{formatDate(order.createdAt)}
 					</p>
-				</div>
-				<div className="flex items-center gap-2">
-					<Button variant="outline">Restock</Button>
-					<Button variant="outline">Return</Button>
-					<Button variant="outline">{t("common.edit")}</Button>
-					<Button variant="outline">Print</Button>
-					<Button variant="outline">
-						{t("orders.detail.moreActions")}
-						<MoreHorizontal className="w-4 h-4 ml-2" />
-					</Button>
 				</div>
 			</div>
 
@@ -108,84 +136,76 @@ function OrderDetailPage() {
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 				{/* Main content - 2 columns */}
 				<div className="lg:col-span-2 space-y-6">
-					{/* Fulfillment Card */}
+					{/* Order Status Card */}
 					<Card className="p-5">
 						<div className="flex items-center justify-between mb-4">
 							<div className="flex items-center gap-2">
-								<Package className="w-5 h-5 text-status-success" />
+								<Package className="w-5 h-5 text-primary" />
 								<span className="font-medium">
-									{order.fulfillmentStatus === "fulfilled"
-										? t("orders.status.fulfilled")
-										: t("orders.status.unfulfilled")}
+									{getStatusText(order.status)}
 								</span>
 							</div>
 							<span className="text-sm text-muted-foreground">
-								#{order.orderNumber.replace("#", "")}-F1
+								Seller Order #{order.id}
 							</span>
 						</div>
 
-						{order.fulfillmentStatus === "fulfilled" && (
-							<p className="text-sm text-muted-foreground mb-4">
-								📦 {formatDate(order.updatedAt).split(" at")[0]}
-							</p>
-						)}
-
 						{/* Order Items */}
 						<div className="space-y-3">
-							{order.items.map((item) => (
-								<div key={item.id} className="flex items-center gap-4">
-									{item.image ? (
-										<img
-											src={item.image}
-											alt={item.title}
-											className="w-12 h-12 rounded object-cover border border-border"
-										/>
-									) : (
-										<div className="w-12 h-12 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">
-											No img
-										</div>
-									)}
+							{order.lines.map((line) => (
+								<div key={line.productId} className="flex items-center gap-4">
+									<div className="w-12 h-12 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">
+										<Package className="w-6 h-6" />
+									</div>
 									<div className="flex-1">
-										<p className="font-medium text-sm">{item.title}</p>
-										<p className="text-xs text-muted-foreground">{item.sku}</p>
+										<p className="font-medium text-sm">
+											{getLocalizedName(line.productName)}
+										</p>
+										<p className="text-xs text-muted-foreground">
+											Product ID: {line.productId}
+										</p>
 									</div>
 									<div className="text-right text-sm">
 										<p>
-											{formatCurrency(item.price)} × {item.quantity}
+											{formatCurrency(line.unitPrice)} × {line.quantity}
 										</p>
 										<p className="font-medium">
-											{formatCurrency(item.price * item.quantity)}
+											{formatCurrency(line.subtotal)}
 										</p>
 									</div>
 								</div>
 							))}
 						</div>
 
-						{order.fulfillmentStatus !== "fulfilled" && (
+						{order.status === "RECEIVED" && (
+							<div className="mt-4 flex gap-2">
+								<Button>Confirm Order</Button>
+								<Button variant="outline">Cancel Order</Button>
+							</div>
+						)}
+
+						{order.status === "CONFIRMED" && (
 							<div className="mt-4">
-								<Button className="bg-primary">+ Add tracking</Button>
+								<Button>Mark as Shipped</Button>
+							</div>
+						)}
+
+						{order.status === "SHIPPED" && (
+							<div className="mt-4">
+								<Button>Mark as Delivered</Button>
 							</div>
 						)}
 					</Card>
 
-					{/* Payment Card */}
+					{/* Payment Summary Card */}
 					<Card className="p-5">
-						<div className="flex items-center gap-2 mb-4">
-							<StatusBadge status={order.paymentStatus} type="payment" />
-						</div>
+						<h3 className="font-medium mb-4">{t("orders.detail.summary")}</h3>
 
 						<div className="space-y-2 text-sm">
 							<div className="flex justify-between">
 								<span className="text-muted-foreground">
-									{t("orders.detail.subtotal")}
-								</span>
-								<span>
-									{order.items.reduce((sum, item) => sum + item.quantity, 0)}{" "}
-									item
-									{order.items.reduce((sum, item) => sum + item.quantity, 0) !==
-									1
-										? "s"
-										: ""}
+									{t("orders.detail.subtotal")} ({totalItems} item
+									{totalItems !== 1 ? "s" : ""})
 								</span>
 								<span>{formatCurrency(order.subtotal)}</span>
 							</div>
@@ -193,209 +213,54 @@ function OrderDetailPage() {
 								<span className="text-muted-foreground">
 									{t("orders.detail.shipping")}
 								</span>
-								<span className="text-muted-foreground">Standard</span>
-								<span>{formatCurrency(order.shipping)}</span>
-							</div>
-							<div className="flex justify-between">
-								<span className="text-muted-foreground">Taxes</span>
-								<span className="text-muted-foreground">GST 14%</span>
-								<span>{formatCurrency(order.tax)}</span>
+								<span>{formatCurrency(order.shippingFee)}</span>
 							</div>
 							<Separator className="my-2" />
 							<div className="flex justify-between font-semibold">
 								<span>{t("orders.detail.total")}</span>
-								<span></span>
 								<span>{formatCurrency(order.total)}</span>
 							</div>
 						</div>
-
-						<Separator className="my-4" />
-
-						<div className="space-y-2 text-sm">
-							<div className="flex justify-between">
-								<span className="text-muted-foreground">
-									{t("orders.status.paid")}
-								</span>
-								<span>
-									{formatCurrency(
-										order.paymentStatus === "paid" ? order.total : 0,
-									)}
-								</span>
-							</div>
-							<div className="flex justify-between font-semibold">
-								<span>Balance</span>
-								<span>
-									{formatCurrency(
-										order.paymentStatus === "paid" ? 0 : order.total,
-									)}
-								</span>
-							</div>
-						</div>
-
-						{order.paymentStatus === "pending" && (
-							<div className="flex gap-2 mt-4 justify-end">
-								<Button variant="outline">Send invoice</Button>
-								<Button>Mark as paid</Button>
-							</div>
-						)}
-					</Card>
-
-					{/* Timeline */}
-					<Card className="p-5">
-						<h3 className="font-medium mb-4">{t("orders.detail.timeline")}</h3>
-
-						{/* Comment input */}
-						<div className="flex gap-3 mb-6 p-3 bg-muted/50 rounded-lg">
-							<div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
-								{order.customer.name
-									.split(" ")
-									.map((n) => n[0])
-									.join("")}
-							</div>
-							<input
-								type="text"
-								placeholder="Leave a comment..."
-								className="flex-1 bg-transparent text-sm outline-none"
-							/>
-						</div>
-
-						<OrderTimeline events={order.timeline} />
 					</Card>
 				</div>
 
 				{/* Sidebar - 1 column */}
 				<div className="space-y-6">
-					{/* Notes */}
+					{/* Order Info */}
 					<Card className="p-5">
-						<div className="flex items-center justify-between mb-3">
-							<h3 className="font-medium">Notes</h3>
-							<Button variant="ghost" size="icon" className="h-6 w-6">
-								<span className="text-muted-foreground">✏️</span>
-							</Button>
-						</div>
-						<p className="text-sm text-muted-foreground">
-							{order.notes || "No notes from customer"}
-						</p>
-					</Card>
-
-					{/* Customer */}
-					<Card className="p-5">
-						<div className="flex items-center justify-between mb-3">
-							<h3 className="font-medium">{t("orders.detail.customer")}</h3>
-							<span className="text-xs text-muted-foreground">×</span>
-						</div>
-						<div className="space-y-3">
+						<h3 className="font-medium mb-3">Order Information</h3>
+						<div className="space-y-3 text-sm">
 							<div>
-								<button
-									type="button"
-									className="text-sm text-primary hover:underline"
-								>
-									{order.customer.name}
-								</button>
-								<p className="text-xs text-muted-foreground">
-									{order.customer.ordersCount} order
-									{order.customer.ordersCount !== 1 ? "s" : ""}
-								</p>
+								<span className="text-muted-foreground">Order ID:</span>
+								<span className="ml-2 font-medium">#{order.orderId}</span>
 							</div>
-
 							<div>
-								<h4 className="text-xs font-medium text-muted-foreground mb-1">
-									{t("orders.detail.contactInfo")}
-								</h4>
-								<div className="space-y-1">
-									<a
-										href={`mailto:${order.customer.email}`}
-										className="flex items-center gap-2 text-sm text-primary hover:underline"
-									>
-										<Mail className="w-3 h-3" />
-										{order.customer.email}
-									</a>
-									{order.customer.phone && (
-										<p className="flex items-center gap-2 text-sm text-muted-foreground">
-											<Phone className="w-3 h-3" />
-											{order.customer.phone}
-										</p>
-									)}
-								</div>
+								<span className="text-muted-foreground">Seller Order ID:</span>
+								<span className="ml-2 font-medium">#{order.id}</span>
 							</div>
-
 							<div>
-								<div className="flex items-center justify-between mb-1">
-									<h4 className="text-xs font-medium text-muted-foreground">
-										{t("orders.detail.shippingAddress")}
-									</h4>
-									<Button variant="ghost" size="icon" className="h-5 w-5">
-										<span className="text-xs text-muted-foreground">✏️</span>
-									</Button>
-								</div>
-								<div className="text-sm space-y-0.5">
-									<p>{order.shippingAddress.name}</p>
-									<p className="text-muted-foreground">
-										{order.shippingAddress.address1}
-									</p>
-									{order.shippingAddress.address2 && (
-										<p className="text-muted-foreground">
-											{order.shippingAddress.address2}
-										</p>
-									)}
-									<p className="text-muted-foreground">
-										{order.shippingAddress.city}
-									</p>
-									<p className="text-muted-foreground">
-										{order.shippingAddress.zip}
-									</p>
-									<p className="text-muted-foreground">
-										{order.shippingAddress.country}
-									</p>
-									<a
-										href={`https://maps.google.com/?q=${encodeURIComponent(
-											`${order.shippingAddress.address1}, ${order.shippingAddress.city}`,
-										)}`}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-primary text-xs hover:underline flex items-center gap-1"
-									>
-										<MapPin className="w-3 h-3" />
-										View map
-									</a>
-								</div>
+								<span className="text-muted-foreground">Created:</span>
+								<span className="ml-2">{formatDate(order.createdAt)}</span>
 							</div>
-
 							<div>
-								<h4 className="text-xs font-medium text-muted-foreground mb-1">
-									Billing address
-								</h4>
-								<p className="text-sm text-muted-foreground">
-									{order.billingAddress
-										? order.billingAddress.address1
-										: "Same as shipping address"}
-								</p>
+								<span className="text-muted-foreground">Last Updated:</span>
+								<span className="ml-2">{formatDate(order.updatedAt)}</span>
 							</div>
 						</div>
 					</Card>
 
-					{/* Tags */}
+					{/* Status History */}
 					<Card className="p-5">
-						<div className="flex items-center justify-between mb-3">
-							<h3 className="font-medium">Tags</h3>
-							<Button variant="ghost" size="icon" className="h-6 w-6">
-								<span className="text-muted-foreground">✏️</span>
-							</Button>
+						<h3 className="font-medium mb-3">Status</h3>
+						<div className="flex items-center gap-2">
+							<StatusBadge
+								status={mapStatusToFulfillment(order.status)}
+								type="fulfillment"
+							/>
+							<span className="text-sm text-muted-foreground">
+								{getStatusText(order.status)}
+							</span>
 						</div>
-						{order.tags.length > 0 ? (
-							<div className="flex flex-wrap gap-2">
-								{order.tags.map((tag) => (
-									<span
-										key={tag}
-										className="px-2 py-1 bg-muted rounded text-xs font-medium"
-									>
-										{tag}
-									</span>
-								))}
-							</div>
-						) : (
-							<p className="text-sm text-muted-foreground">No tags</p>
-						)}
 					</Card>
 				</div>
 			</div>

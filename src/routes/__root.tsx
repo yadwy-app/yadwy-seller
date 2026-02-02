@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { DashboardLayout } from "@/components/layout";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { AuthProvider, useAuth } from "@/contexts";
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
 import appCss from "@/styles.css?url";
@@ -76,11 +77,11 @@ function RootComponent() {
 function AuthGuard({ children }: { children: React.ReactNode }) {
 	const { isAuthenticated, isLoading } = useAuth();
 
-	// Show nothing while checking auth status
+	// Show spinner while checking auth status
 	if (isLoading) {
 		return (
 			<div className="flex min-h-svh items-center justify-center">
-				<div className="animate-pulse text-muted-foreground">Loading...</div>
+				<LoadingSpinner size="lg" />
 			</div>
 		);
 	}
