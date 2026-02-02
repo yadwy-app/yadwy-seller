@@ -64,13 +64,20 @@ export function SignupForm() {
 	return (
 		<div className="flex flex-col gap-6">
 			<Card className="overflow-hidden p-0">
-				<CardContent className="grid p-0 md:grid-cols-2">
+				<CardContent className="grid p-0 md:grid-cols-2 md:min-h-[420px]">
 					<Form {...form}>
-						<form className="p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
+						<form
+							className="p-6 md:p-8 flex flex-col justify-center"
+							onSubmit={form.handleSubmit(onSubmit)}
+						>
 							<div className="flex flex-col gap-6">
 								<div className="flex flex-col items-center gap-2 text-center">
-									<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground mb-2">
-										<span className="font-bold text-lg">Y</span>
+									<div className="flex h-10 w-10 items-center justify-center rounded-md overflow-hidden bg-white mb-2">
+										<img
+											src="/yadwy-logo.svg"
+											alt="Yadwy"
+											className="size-9 object-contain"
+										/>
 									</div>
 									<h1 className="text-2xl font-bold">
 										{t("auth.signup.title")}
@@ -142,8 +149,12 @@ export function SignupForm() {
 					</Form>
 					<div className="relative hidden bg-muted md:block">
 						<div className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-primary/10 to-primary/5">
-							<div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground mb-6">
-								<span className="font-bold text-3xl">Y</span>
+							<div className="flex h-16 w-16 items-center justify-center rounded-md overflow-hidden bg-white mb-6">
+								<img
+									src="/yadwy-logo.svg"
+									alt="Yadwy"
+									className="size-14 object-contain"
+								/>
 							</div>
 							<h2 className="text-2xl font-bold text-center mb-2">
 								{t("auth.sidebar.joinYadwy")}

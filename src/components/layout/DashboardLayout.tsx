@@ -218,8 +218,12 @@ function AppSidebar() {
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
 							<Link to="/">
-								<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-									<span className="font-bold text-sm">Y</span>
+								<div className="flex aspect-square size-8 items-center justify-center rounded-md overflow-hidden bg-white">
+									<img
+										src="/yadwy-logo.svg"
+										alt="Yadwy"
+										className="size-7 object-contain"
+									/>
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-semibold">Yadwy</span>
