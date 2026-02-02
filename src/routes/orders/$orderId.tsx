@@ -42,24 +42,6 @@ function OrderDetailPage() {
 		return i18n.language === "ar" ? name.ar : name.en;
 	};
 
-	// Map backend status to fulfillment status for badge
-	const mapStatusToFulfillment = (status: SellerOrder["status"]) => {
-		switch (status) {
-			case "RECEIVED":
-				return "unfulfilled";
-			case "CONFIRMED":
-				return "in_progress";
-			case "SHIPPED":
-				return "in_progress";
-			case "DELIVERED":
-				return "fulfilled";
-			case "CANCELLED":
-				return "on_hold";
-			default:
-				return "unfulfilled";
-		}
-	};
-
 	// Get status display text
 	const getStatusText = (status: SellerOrder["status"]) => {
 		switch (status) {
@@ -121,10 +103,7 @@ function OrderDetailPage() {
 				<div className="flex-1">
 					<div className="flex items-center gap-3">
 						<h1 className="text-xl font-semibold">Order #{order.orderId}</h1>
-						<StatusBadge
-							status={mapStatusToFulfillment(order.status)}
-							type="fulfillment"
-						/>
+						<StatusBadge status={order.status} />
 					</div>
 					<p className="text-sm text-muted-foreground mt-1">
 						{formatDate(order.createdAt)}
@@ -253,13 +232,7 @@ function OrderDetailPage() {
 					<Card className="p-5">
 						<h3 className="font-medium mb-3">Status</h3>
 						<div className="flex items-center gap-2">
-							<StatusBadge
-								status={mapStatusToFulfillment(order.status)}
-								type="fulfillment"
-							/>
-							<span className="text-sm text-muted-foreground">
-								{getStatusText(order.status)}
-							</span>
+							<StatusBadge status={order.status} />
 						</div>
 					</Card>
 				</div>

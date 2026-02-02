@@ -26,6 +26,12 @@ src/hooks/            # SHARED hooks only
 
 ## Rules
 
+### Pre-Commit Checks
+- Run `npm run check` before committing any code changes
+- This runs Biome lint + format to catch errors early
+- Fix all lint errors (button types, import order, etc.)
+- Lefthook will block commits with lint errors
+
 ### Build Verification
 - Run `npm run build` after every change
 - Fix all TypeScript errors before committing

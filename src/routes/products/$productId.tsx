@@ -84,7 +84,7 @@ function ProductDetailPage() {
 				<div className="flex-1">
 					<div className="flex items-center gap-3">
 						<h1 className="text-xl font-semibold">{product.title}</h1>
-						<StatusBadge status={product.status} type="product" />
+						<StatusBadge status={product.status} />
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
