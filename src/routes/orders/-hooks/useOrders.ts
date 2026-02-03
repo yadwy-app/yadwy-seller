@@ -1,4 +1,9 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+	useInfiniteQuery,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import { getDashboardStats } from "@/data/mock-orders";
 import {
 	type OrdersQueryParams,
@@ -34,6 +39,25 @@ export function useOrder(id: string) {
 		queryKey: ["orders", id],
 		queryFn: () => ordersService.getOrderById(id),
 		enabled: !!id,
+	});
+}
+
+export function useUpdateOrderStatus() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ orderId, status }: { orderId: string; status: string }) =>
+			ordersService.updateOrderStatus(orderId, status),
+		onSuccess: (updatedOrder) => {
+			// Update the specific order in cache
+			queryClient.setQueryData(
+				["orders", updatedOrder.id.toString()],
+				updatedOrder,
+			);
+
+			// Invalidate orders list to refresh
+			queryClient.invalidateQueries({ queryKey: ["orders"] });
+		},
 	});
 }
 

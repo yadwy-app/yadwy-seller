@@ -80,10 +80,12 @@ function OrdersPage() {
 			if (activeTab !== "all" && order.status.toLowerCase() !== activeTab) {
 				return false;
 			}
-			// Filter by search (order ID)
+			// Filter by search (customer name or phone number)
 			if (searchQuery) {
 				const query = searchQuery.toLowerCase();
-				return order.orderId.toString().includes(query);
+				const customerName = (order.customerName || "").toLowerCase();
+				const customerPhone = (order.customerPhone || "").toLowerCase();
+				return customerName.includes(query) || customerPhone.includes(query);
 			}
 			return true;
 		});
@@ -188,10 +190,10 @@ function OrdersPage() {
 								<div className="flex items-center gap-1">
 									<Input
 										ref={searchInputRef}
-										placeholder="Search orders..."
+										placeholder="Search by customer name or phone..."
 										value={searchQuery}
 										onChange={(e) => setSearchQuery(e.target.value)}
-										className="h-8 w-48"
+										className="h-8 w-64"
 									/>
 									<Button
 										variant="ghost"

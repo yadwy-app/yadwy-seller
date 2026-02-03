@@ -11,6 +11,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { DashboardLayout } from "@/components/layout";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/contexts";
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
 import appCss from "@/styles.css?url";
@@ -75,6 +76,7 @@ function RootComponent() {
 					</AuthGuard>
 				)}
 			</AuthProvider>
+			<Toaster />
 		</RootDocument>
 	);
 }
