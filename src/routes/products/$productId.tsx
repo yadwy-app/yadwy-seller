@@ -6,15 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { CategorySelector } from "./-components/CategorySelector";
+import { StatusSelector } from "./-components/StatusSelector";
 import { useProduct } from "./-hooks/useProducts";
 
 export const Route = createFileRoute("/products/$productId")({
@@ -64,13 +59,6 @@ function ProductDetailPage() {
 		);
 	}
 
-	// Calculate profit and margin if cost is available
-	const profit = product.costPerItem
-		? product.price - product.costPerItem
-		: null;
-	const margin =
-		profit && product.price > 0 ? (profit / product.price) * 100 : null;
-
 	return (
 		<div className="pb-20">
 			{/* Header */}
@@ -101,15 +89,16 @@ function ProductDetailPage() {
 				{/* Main content - 2 columns */}
 				<div className="lg:col-span-2 space-y-4">
 					{/* Title & Description */}
+					{/* Title, Description & Media */}
 					<Card>
-						<CardContent className="pt-6">
+						<CardContent className="pt-6 space-y-4">
 							<div className="space-y-4">
 								<div>
 									<Label htmlFor="title">{t("products.new.name")}</Label>
 									<Input
 										id="title"
 										defaultValue={product.title}
-										className="mt-1.5"
+										className="mt-1.5 bg-muted/40 border-border/50 shadow-none focus:bg-background transition-colors"
 									/>
 								</div>
 								<div>
@@ -119,34 +108,42 @@ function ProductDetailPage() {
 									<Textarea
 										id="description"
 										defaultValue={product.description}
-										className="mt-1.5 min-h-[150px]"
+										className="mt-1.5 min-h-[150px] bg-muted/40 border-border/50 shadow-none focus:bg-background transition-colors"
 									/>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
 
-					{/* Media */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">
-								{t("products.new.media")}
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="grid grid-cols-4 gap-3">
-								{product.images.map((image) => (
-									<div key={image.id} className="relative group aspect-square">
-										<img
-											src={image.url}
-											alt={image.alt}
-											className="w-full h-full object-cover rounded-lg border border-border"
-										/>
+							<div className="pt-4 mt-4 border-t">
+								<Label className="text-base font-medium mb-3 block">
+									{t("products.new.media")}
+								</Label>
+								<div className="grid grid-cols-4 gap-3">
+									{product.images.map((image) => (
+										<div
+											key={image.id}
+											className="relative group aspect-square"
+										>
+											<img
+												src={image.url}
+												alt={image.alt}
+												className="w-full h-full object-cover rounded-lg border border-border"
+											/>
+										</div>
+									))}
+									<div className="aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 flex items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-muted/50 transition-colors">
+										<Plus className="w-5 h-5 text-muted-foreground" />
 									</div>
-								))}
-								<div className="aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 flex items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-muted/50 transition-colors">
-									<Plus className="w-5 h-5 text-muted-foreground" />
 								</div>
+							</div>
+
+							<div className="pt-4 mt-4 border-t">
+								<Label
+									htmlFor="category"
+									className="text-base font-medium mb-3 block"
+								>
+									{t("products.new.category")}
+								</Label>
+								<CategorySelector value={product.category} />
 							</div>
 						</CardContent>
 					</Card>
@@ -188,54 +185,6 @@ function ProductDetailPage() {
 											defaultValue={product.compareAtPrice ?? ""}
 											className="pl-12"
 										/>
-									</div>
-								</div>
-							</div>
-							<div className="mt-4 pt-4 border-t">
-								<div className="grid grid-cols-2 gap-4">
-									<div>
-										<Label htmlFor="cost">
-											{t("products.new.costPerItem")}
-										</Label>
-										<div className="relative mt-1.5">
-											<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
-												EGP
-											</span>
-											<Input
-												id="cost"
-												type="number"
-												defaultValue={product.costPerItem ?? ""}
-												className="pl-12"
-											/>
-										</div>
-									</div>
-									<div className="flex items-end pb-2">
-										<div className="flex gap-4 text-sm">
-											<span className="text-muted-foreground">
-												Profit:{" "}
-												<span
-													className={
-														profit && profit > 0
-															? "text-green-600 font-medium"
-															: "text-muted-foreground"
-													}
-												>
-													{profit !== null ? formatCurrency(profit) : "--"}
-												</span>
-											</span>
-											<span className="text-muted-foreground">
-												Margin:{" "}
-												<span
-													className={
-														margin && margin > 0
-															? "text-green-600 font-medium"
-															: "text-muted-foreground"
-													}
-												>
-													{margin !== null ? `${margin.toFixed(1)}%` : "--"}
-												</span>
-											</span>
-										</div>
 									</div>
 								</div>
 							</div>
@@ -323,82 +272,11 @@ function ProductDetailPage() {
 				<div className="space-y-4">
 					{/* Status */}
 					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">
+						<CardContent className="p-3">
+							<Label className="text-sm font-medium mb-1.5 block">
 								{t("products.new.status")}
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<Select defaultValue={product.status}>
-								<SelectTrigger>
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="active">
-										{t("products.new.active")}
-									</SelectItem>
-									<SelectItem value="draft">
-										{t("products.new.draft")}
-									</SelectItem>
-									<SelectItem value="archived">
-										{t("products.status.archived")}
-									</SelectItem>
-								</SelectContent>
-							</Select>
-						</CardContent>
-					</Card>
-
-					{/* Publishing */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">
-								Publishing
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="flex flex-wrap gap-2">
-								<div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm">
-									<span className="w-2 h-2 bg-green-500 rounded-full" />
-									Online Store
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* Product organization */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">
-								{t("products.new.organization")}
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="space-y-4">
-								<div>
-									<Label htmlFor="category">{t("products.new.category")}</Label>
-									<Input
-										id="category"
-										defaultValue={product.category}
-										className="mt-1.5"
-									/>
-								</div>
-								<div>
-									<Label htmlFor="vendor">{t("products.new.vendor")}</Label>
-									<Input
-										id="vendor"
-										defaultValue={product.vendor}
-										className="mt-1.5"
-									/>
-								</div>
-								<div>
-									<Label htmlFor="tags">{t("products.new.tags")}</Label>
-									<Input
-										id="tags"
-										placeholder={t("products.new.tags")}
-										className="mt-1.5"
-									/>
-								</div>
-							</div>
+							</Label>
+							<StatusSelector value={product.status} />
 						</CardContent>
 					</Card>
 				</div>
