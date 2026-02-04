@@ -35,6 +35,9 @@ export interface SellerOrder {
 	total: number;
 	createdAt: string;
 	updatedAt: string;
+	// Customer information
+	customerName: string;
+	customerPhone: string;
 }
 
 // Query params for fetching orders

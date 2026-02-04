@@ -114,7 +114,7 @@ export function OrderTable({
 		<Table>
 			<TableHeader>
 				<TableRow className="hover:bg-muted/50 bg-muted/50 border-b border-border h-9">
-					<TableHead className="w-10 py-2">
+					<TableHead className="w-10 py-2 text-center">
 						<Checkbox
 							checked={isAllSelected}
 							indeterminate={isSomeSelected}
@@ -122,19 +122,22 @@ export function OrderTable({
 							aria-label="Select all orders"
 						/>
 					</TableHead>
-					<TableHead className="font-medium text-muted-foreground text-xs py-2">
+					<TableHead className="font-medium text-muted-foreground text-xs py-2 text-center">
 						Order
 					</TableHead>
-					<TableHead className="font-medium text-muted-foreground text-xs py-2">
+					<TableHead className="font-medium text-muted-foreground text-xs py-2 text-center">
+						Customer
+					</TableHead>
+					<TableHead className="font-medium text-muted-foreground text-xs py-2 text-center">
 						Date
 					</TableHead>
-					<TableHead className="font-medium text-muted-foreground text-xs py-2">
+					<TableHead className="font-medium text-muted-foreground text-xs py-2 text-center">
 						Items
 					</TableHead>
-					<TableHead className="font-medium text-muted-foreground text-xs py-2">
+					<TableHead className="font-medium text-muted-foreground text-xs py-2 text-center">
 						Status
 					</TableHead>
-					<TableHead className="font-medium text-muted-foreground text-xs text-right py-2">
+					<TableHead className="font-medium text-muted-foreground text-xs py-2 text-center">
 						Total
 					</TableHead>
 				</TableRow>
@@ -147,7 +150,7 @@ export function OrderTable({
 						data-selected={selectedOrders.includes(order.id)}
 						onClick={() => handleRowClick(order.id)}
 					>
-						<TableCell className="w-10">
+						<TableCell className="w-10 text-center">
 							<Checkbox
 								checked={selectedOrders.includes(order.id)}
 								onCheckedChange={() => handleSelectOrder(order.id)}
@@ -155,7 +158,7 @@ export function OrderTable({
 								onClick={(e) => e.stopPropagation()}
 							/>
 						</TableCell>
-						<TableCell>
+						<TableCell className="text-center">
 							<Link
 								to="/orders/$orderId"
 								params={{ orderId: String(order.id) }}
@@ -165,10 +168,20 @@ export function OrderTable({
 								#{order.orderId}
 							</Link>
 						</TableCell>
-						<TableCell className="text-muted-foreground text-sm">
+						<TableCell className="text-center">
+							<div className="flex flex-col">
+								<span className="text-sm font-medium">
+									{order.customerName || "N/A"}
+								</span>
+								<span className="text-xs text-muted-foreground">
+									{order.customerPhone || "N/A"}
+								</span>
+							</div>
+						</TableCell>
+						<TableCell className="text-muted-foreground text-sm text-center">
 							{formatDate(order.createdAt)}
 						</TableCell>
-						<TableCell>
+						<TableCell className="text-center">
 							<div className="flex flex-col">
 								<span className="text-sm">{getProductName(order)}</span>
 								<span className="text-xs text-muted-foreground">
@@ -180,10 +193,10 @@ export function OrderTable({
 								</span>
 							</div>
 						</TableCell>
-						<TableCell>
+						<TableCell className="text-center">
 							<StatusBadge status={order.status} />
 						</TableCell>
-						<TableCell className="text-right font-medium">
+						<TableCell className="text-center font-medium">
 							{formatCurrency(order.total)}
 						</TableCell>
 					</TableRow>
