@@ -58,6 +58,7 @@ export function CreateOrderForm({ onSubmit, isLoading }: CreateOrderFormProps) {
 	const { t, i18n } = useTranslation();
 	const { data: products = [], isLoading: productsLoading } = useProducts();
 	const { data: provinces = [], isLoading: provincesLoading } = useProvinces();
+	console.log("Test");
 
 	const form = useForm<CreateOrderFormData>({
 		resolver: zodResolver(createOrderSchema),
