@@ -71,7 +71,7 @@ export function CreateOrderForm({ onSubmit, isLoading }: CreateOrderFormProps) {
 			},
 			items: [
 				{
-					productId: 0,
+					productId: undefined as unknown as number,
 					quantity: 1,
 				},
 			],
@@ -259,7 +259,9 @@ export function CreateOrderForm({ onSubmit, isLoading }: CreateOrderFormProps) {
 										<Label>{t("orders.new.product")}</Label>
 										<Select
 											value={
-												form.watch(`items.${index}.productId`)?.toString() || ""
+												form.watch(`items.${index}.productId`)
+													? form.watch(`items.${index}.productId`).toString()
+													: ""
 											}
 											onValueChange={(value) =>
 												handleProductSelect(index, value)
