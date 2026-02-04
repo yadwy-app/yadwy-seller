@@ -15,7 +15,7 @@ export const Route = createFileRoute("/products/")({
 function ProductsPage() {
 	const { t } = useTranslation();
 	const { data: products, isLoading } = useProducts();
-	const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+	const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
 
 	// Placeholder Toolbar matching Orders page visual style
 	const Toolbar = (

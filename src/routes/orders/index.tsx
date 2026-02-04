@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	Download,
 	Filter,
@@ -112,9 +112,11 @@ function OrdersPage() {
 							<Download className="w-4 h-4 mr-2" />
 							{t("common.export")}
 						</Button>
-						<Button size="sm">
-							<Plus className="w-4 h-4 mr-2" />
-							Create order
+						<Button size="sm" asChild>
+							<Link to="/orders/new">
+								<Plus className="w-4 h-4 mr-2" />
+								{t("orders.createOrder")}
+							</Link>
 						</Button>
 					</div>
 				}

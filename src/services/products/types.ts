@@ -1,16 +1,21 @@
 // Product-related types - colocated with product services
 
+export interface LocalizedText {
+	ar: string;
+	en: string;
+}
+
 export interface CreateProductRequestDto {
-	name: string;
-	description: string;
+	name: LocalizedText;
+	description: LocalizedText;
 	price: number;
 	categoryId: number;
 	visible: boolean;
 }
 
 export interface UpdateProductRequestDto {
-	name?: string;
-	description?: string;
+	name?: LocalizedText;
+	description?: LocalizedText;
 	price?: number;
 	categoryId?: number;
 	visible?: boolean;
@@ -18,17 +23,20 @@ export interface UpdateProductRequestDto {
 
 export interface ProductResponseDto {
 	id: number;
-	name: string;
-	description: string;
-	price: number;
-	categoryId: number;
 	sellerId: number;
+	name: LocalizedText;
+	description: LocalizedText;
+	images: string[];
+	price: number;
+	compareAtPrice?: number;
+	categoryId: number;
+	stock: number;
+	trackInventory: boolean;
 	visible: boolean;
-	createdAt: string;
-	updatedAt: string;
 }
 
-export interface ProductListParams {
+export interface ProductListParams
+	extends Record<string, string | number | boolean | undefined> {
 	sellerId?: number;
 	categoryId?: number;
 	visible?: boolean;

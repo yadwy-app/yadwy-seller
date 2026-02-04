@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import {
 	Table,
 	TableBody,
@@ -9,13 +9,13 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import type { Product } from "@/types";
+import type { ProductResponseDto } from "@/services/products/types";
 
 interface ProductTableProps {
-	products: Product[];
+	products: ProductResponseDto[];
 	isLoading?: boolean;
-	selectedProducts?: string[];
-	onSelectionChange?: (ids: string[]) => void;
+	selectedProducts?: number[];
+	onSelectionChange?: (ids: number[]) => void;
 }
 
 export function ProductTable({
@@ -24,6 +24,8 @@ export function ProductTable({
 	selectedProducts = [],
 	onSelectionChange,
 }: ProductTableProps) {
+	const { i18n } = useTranslation();
+
 	if (isLoading) {
 		return (
 			<div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
@@ -63,7 +65,7 @@ export function ProductTable({
 		}
 	};
 
-	const handleSelectProduct = (productId: string) => {
+	const handleSelectProduct = (productId: number) => {
 		if (onSelectionChange) {
 			if (selectedProducts.includes(productId)) {
 				onSelectionChange(selectedProducts.filter((id) => id !== productId));
@@ -104,61 +106,73 @@ export function ProductTable({
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{products.map((product) => (
-					<TableRow
-						key={product.id}
-						className="cursor-pointer hover:bg-muted/50"
-						data-selected={selectedProducts.includes(product.id)}
-					>
-						<TableCell className="w-10">
-							<Checkbox
-								checked={selectedProducts.includes(product.id)}
-								onCheckedChange={() => handleSelectProduct(product.id)}
-								aria-label={`Select product ${product.title}`}
-								onClick={(e) => e.stopPropagation()}
-							/>
-						</TableCell>
-						<TableCell className="w-12">
-							{product.images[0] ? (
-								<img
-									src={product.images[0].url}
-									alt={product.images[0].alt}
-									className="w-10 h-10 rounded object-cover"
+				{products.map((product) => {
+					const productName =
+						i18n.language === "ar" ? product.name.ar : product.name.en;
+					return (
+						<TableRow
+							key={product.id}
+							className="cursor-pointer hover:bg-muted/50"
+							data-selected={selectedProducts.includes(product.id)}
+						>
+							<TableCell className="w-10">
+								<Checkbox
+									checked={selectedProducts.includes(product.id)}
+									onCheckedChange={() => handleSelectProduct(product.id)}
+									aria-label={`Select product ${productName}`}
+									onClick={(e) => e.stopPropagation()}
 								/>
-							) : (
-								<div className="w-10 h-10 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">
-									No img
-								</div>
-							)}
-						</TableCell>
-						<TableCell>
-							<Link
-								to="/products/$productId"
-								params={{ productId: product.id }}
-								className="font-medium text-foreground hover:underline"
-								onClick={(e) => e.stopPropagation()}
-							>
-								{product.title}
-							</Link>
-						</TableCell>
-						<TableCell>
-							<StatusBadge status={product.status} />
-						</TableCell>
-						<TableCell>
-							<span
-								className={product.inventory < 10 ? "text-status-warning" : ""}
-							>
-								{product.inventory} in stock
-							</span>
-						</TableCell>
-						<TableCell className="text-muted-foreground">
-							{product.category}
-						</TableCell>
-						<TableCell className="text-right font-medium">
-							{formatCurrency(product.price)}
-						</TableCell>
-					</TableRow>
-				))}
+							</TableCell>
+							<TableCell className="w-12">
+								{product.images[0] ? (
+									<img
+										src={product.images[0]}
+										alt={productName}
+										className="w-10 h-10 rounded object-cover"
+									/>
+								) : (
+									<div className="w-10 h-10 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">
+										No img
+									</div>
+								)}
+							</TableCell>
+							<TableCell>
+								<Link
+									to="/products/$productId"
+									params={{ productId: product.id.toString() }}
+									className="font-medium text-foreground hover:underline"
+									onClick={(e) => e.stopPropagation()}
+								>
+									{productName}
+								</Link>
+							</TableCell>
+							<TableCell>
+								<span
+									className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+										product.visible
+											? "bg-green-50 text-green-700"
+											: "bg-gray-50 text-gray-700"
+									}`}
+								>
+									{product.visible ? "Active" : "Draft"}
+								</span>
+							</TableCell>
+							<TableCell>
+								<span
+									className={product.stock < 10 ? "text-status-warning" : ""}
+								>
+									{product.stock} in stock
+								</span>
+							</TableCell>
+							<TableCell className="text-muted-foreground">
+								Category {product.categoryId}
+							</TableCell>
+							<TableCell className="text-right font-medium">
+								{formatCurrency(product.price)}
+							</TableCell>
+						</TableRow>
+					);
+				})}
 			</TableBody>
 		</Table>
 	);

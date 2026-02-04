@@ -154,5 +154,12 @@ body {
 	}
 	body {
 		@apply bg-background text-foreground;
+		
+		/* Override Radix UI's scroll lock to prevent scrollbar from disappearing */
+		/* This keeps the scrollbar visible even when dropdowns open */
+		&[data-scroll-locked] {
+			overflow-y: auto !important;
+			margin-right: 0 !important;
+		}
 	}
 }
