@@ -108,7 +108,8 @@ function OrderDetailPage() {
 		);
 	}
 
-	const totalItems = order.lines.reduce((sum, line) => sum + line.quantity, 0);
+	const totalItems =
+		order.lines?.reduce((sum, line) => sum + line.quantity, 0) || 0;
 
 	return (
 		<div>
@@ -151,29 +152,35 @@ function OrderDetailPage() {
 
 						{/* Order Items */}
 						<div className="space-y-3">
-							{order.lines.map((line) => (
-								<div key={line.productId} className="flex items-center gap-4">
-									<div className="w-12 h-12 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">
-										<Package className="w-6 h-6" />
+							{order.lines && order.lines.length > 0 ? (
+								order.lines.map((line) => (
+									<div key={line.productId} className="flex items-center gap-4">
+										<div className="w-12 h-12 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">
+											<Package className="w-6 h-6" />
+										</div>
+										<div className="flex-1">
+											<p className="font-medium text-sm">
+												{getLocalizedName(line.productName)}
+											</p>
+											<p className="text-xs text-muted-foreground">
+												Product ID: {line.productId}
+											</p>
+										</div>
+										<div className="text-right text-sm">
+											<p>
+												{formatCurrency(line.unitPrice)} × {line.quantity}
+											</p>
+											<p className="font-medium">
+												{formatCurrency(line.subtotal)}
+											</p>
+										</div>
 									</div>
-									<div className="flex-1">
-										<p className="font-medium text-sm">
-											{getLocalizedName(line.productName)}
-										</p>
-										<p className="text-xs text-muted-foreground">
-											Product ID: {line.productId}
-										</p>
-									</div>
-									<div className="text-right text-sm">
-										<p>
-											{formatCurrency(line.unitPrice)} × {line.quantity}
-										</p>
-										<p className="font-medium">
-											{formatCurrency(line.subtotal)}
-										</p>
-									</div>
-								</div>
-							))}
+								))
+							) : (
+								<p className="text-sm text-muted-foreground">
+									No items in this order
+								</p>
+							)}
 						</div>
 
 						{order.status === "RECEIVED" && (

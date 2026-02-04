@@ -20,7 +20,13 @@ function NewOrderPage() {
 		try {
 			const newOrder = await createOrder.mutateAsync(data);
 			toast.success(t("orders.new.success"));
-			navigate({ to: `/orders/${newOrder.id}` });
+			// Navigate to the first seller order (since we're a seller, there should be one)
+			if (newOrder.sellerOrders && newOrder.sellerOrders.length > 0) {
+				navigate({ to: `/orders/${newOrder.sellerOrders[0].id}` });
+			} else {
+				// Fallback to orders list if no seller orders
+				navigate({ to: "/orders" });
+			}
 		} catch (error) {
 			console.error("Failed to create order:", error);
 			toast.error(

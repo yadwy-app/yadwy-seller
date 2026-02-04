@@ -7,12 +7,10 @@ export function useCreateOrder() {
 
 	return useMutation({
 		mutationFn: (data: PlaceOrderRequest) => ordersService.createOrder(data),
-		onSuccess: (newOrder) => {
+		onSuccess: () => {
 			// Invalidate orders list to refresh with new order
 			queryClient.invalidateQueries({ queryKey: ["orders"] });
-
-			// Add the new order to cache
-			queryClient.setQueryData(["orders", newOrder.id.toString()], newOrder);
+			// Don't cache the seller order here - let the detail page fetch fresh data
 		},
 	});
 }
