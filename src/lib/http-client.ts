@@ -131,6 +131,18 @@ class HttpClient {
 		});
 	}
 
+	public patch<T = GenericResponse>(
+		endpoint: string,
+		data?: unknown,
+		options?: RequestOptions,
+	) {
+		return this.request<T>(endpoint, {
+			...options,
+			method: "PATCH",
+			body: JSON.stringify(data),
+		});
+	}
+
 	public delete<T = GenericResponse>(
 		endpoint: string,
 		options?: RequestOptions,

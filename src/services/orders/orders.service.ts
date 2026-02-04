@@ -37,4 +37,21 @@ export const ordersService = {
 
 		return response;
 	},
+
+	/**
+	 * Update order status
+	 */
+	updateOrderStatus: async (
+		orderId: string,
+		status: string,
+	): Promise<SellerOrder> => {
+		const response = await httpClient.patch<SellerOrder>(
+			`/v1/sellers/orders/${orderId}`,
+			{
+				status,
+			},
+		);
+
+		return response;
+	},
 };

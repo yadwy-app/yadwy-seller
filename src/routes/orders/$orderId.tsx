@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Package } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Separator } from "@/components/ui/separator";
 import type { SellerOrder } from "@/services/orders";
-import { useOrder } from "./-hooks/useOrders";
+import { useOrder, useUpdateOrderStatus } from "./-hooks/useOrders";
 
 export const Route = createFileRoute("/orders/$orderId")({
 	component: OrderDetailPage,
@@ -16,6 +17,25 @@ function OrderDetailPage() {
 	const { t, i18n } = useTranslation();
 	const { orderId } = Route.useParams();
 	const { data: order, isLoading } = useOrder(orderId);
+	const updateOrderStatus = useUpdateOrderStatus();
+
+	const handleStatusUpdate = async (newStatus: string) => {
+		try {
+			console.log("Updating order status:", { orderId, newStatus });
+			await updateOrderStatus.mutateAsync({
+				orderId,
+				status: newStatus,
+			});
+			toast.success(`Order status updated to ${newStatus.toLowerCase()}`);
+		} catch (error) {
+			console.error("Failed to update order status:", error);
+			toast.error(
+				error instanceof Error
+					? error.message
+					: "Failed to update order status",
+			);
+		}
+	};
 
 	const formatCurrency = (amount: number) => {
 		return new Intl.NumberFormat("en-EG", {
@@ -158,20 +178,48 @@ function OrderDetailPage() {
 
 						{order.status === "RECEIVED" && (
 							<div className="mt-4 flex gap-2">
-								<Button>Confirm Order</Button>
-								<Button variant="outline">Cancel Order</Button>
+								<Button
+									onClick={() => handleStatusUpdate("CONFIRMED")}
+									disabled={updateOrderStatus.isPending}
+								>
+									Confirm Order
+								</Button>
+								<Button
+									variant="outline"
+									onClick={() => handleStatusUpdate("CANCELLED")}
+									disabled={updateOrderStatus.isPending}
+								>
+									Cancel Order
+								</Button>
 							</div>
 						)}
 
 						{order.status === "CONFIRMED" && (
-							<div className="mt-4">
-								<Button>Mark as Shipped</Button>
+							<div className="mt-4 flex gap-2">
+								<Button
+									onClick={() => handleStatusUpdate("SHIPPED")}
+									disabled={updateOrderStatus.isPending}
+								>
+									Mark as Shipped
+								</Button>
+								<Button
+									variant="outline"
+									onClick={() => handleStatusUpdate("CANCELLED")}
+									disabled={updateOrderStatus.isPending}
+								>
+									Cancel Order
+								</Button>
 							</div>
 						)}
 
 						{order.status === "SHIPPED" && (
 							<div className="mt-4">
-								<Button>Mark as Delivered</Button>
+								<Button
+									onClick={() => handleStatusUpdate("DELIVERED")}
+									disabled={updateOrderStatus.isPending}
+								>
+									Mark as Delivered
+								</Button>
 							</div>
 						)}
 					</Card>
@@ -205,6 +253,23 @@ function OrderDetailPage() {
 
 				{/* Sidebar - 1 column */}
 				<div className="space-y-6">
+					{/* Customer Info */}
+					<Card className="p-5">
+						<h3 className="font-medium mb-3">Customer Information</h3>
+						<div className="space-y-3 text-sm">
+							<div>
+								<span className="text-muted-foreground">Name:</span>
+								<span className="ml-2 font-medium">
+									{order.customerName || "N/A"}
+								</span>
+							</div>
+							<div>
+								<span className="text-muted-foreground">Phone:</span>
+								<span className="ml-2">{order.customerPhone || "N/A"}</span>
+							</div>
+						</div>
+					</Card>
+
 					{/* Order Info */}
 					<Card className="p-5">
 						<h3 className="font-medium mb-3">Order Information</h3>
@@ -220,10 +285,6 @@ function OrderDetailPage() {
 							<div>
 								<span className="text-muted-foreground">Created:</span>
 								<span className="ml-2">{formatDate(order.createdAt)}</span>
-							</div>
-							<div>
-								<span className="text-muted-foreground">Last Updated:</span>
-								<span className="ml-2">{formatDate(order.updatedAt)}</span>
 							</div>
 						</div>
 					</Card>
