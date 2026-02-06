@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { CategorySelector } from "./-components/CategorySelector";
+import { StatusSelector } from "./-components/StatusSelector";
 
 export const Route = createFileRoute("/products/new")({
 	component: NewProductPage,
@@ -39,15 +41,16 @@ function NewProductPage() {
 				{/* Main content - 2 columns */}
 				<div className="lg:col-span-2 space-y-4">
 					{/* Title & Description */}
+					{/* Title, Description & Media */}
 					<Card>
-						<CardContent className="pt-6">
+						<CardContent className="pt-6 space-y-4">
 							<div className="space-y-4">
 								<div>
 									<Label htmlFor="title">{t("products.new.name")}</Label>
 									<Input
 										id="title"
 										placeholder={t("products.new.namePlaceholder")}
-										className="mt-1.5"
+										className="mt-1.5 bg-muted/40 border-border/50 shadow-none focus:bg-background transition-colors"
 									/>
 								</div>
 								<div>
@@ -57,34 +60,39 @@ function NewProductPage() {
 									<Textarea
 										id="description"
 										placeholder={t("products.new.descriptionPlaceholder")}
-										className="mt-1.5 min-h-[150px]"
+										className="mt-1.5 min-h-[150px] bg-muted/40 border-border/50 shadow-none focus:bg-background transition-colors"
 									/>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
 
-					{/* Media */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">
-								{t("products.new.media")}
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="grid grid-cols-4 gap-3">
-								{/* Placeholder image slots */}
-								<div className="aspect-square rounded-lg border-2 border-dashed border-border bg-muted/50 flex items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-muted transition-colors">
-									<div className="text-center p-2">
-										<Upload className="w-6 h-6 mx-auto text-muted-foreground mb-1" />
-										<span className="text-xs text-muted-foreground">
-											{t("products.new.uploadImages")}
-										</span>
+							<div className="pt-4 mt-4 border-t">
+								<Label className="text-base font-medium mb-3 block">
+									{t("products.new.media")}
+								</Label>
+								<div className="grid grid-cols-4 gap-3">
+									{/* Placeholder image slots */}
+									<div className="aspect-square rounded-lg border-2 border-dashed border-border bg-muted/50 flex items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-muted transition-colors">
+										<div className="text-center p-2">
+											<Upload className="w-6 h-6 mx-auto text-muted-foreground mb-1" />
+											<span className="text-xs text-muted-foreground">
+												{t("products.new.uploadImages")}
+											</span>
+										</div>
+									</div>
+									<div className="aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 flex items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-muted/50 transition-colors">
+										<Plus className="w-5 h-5 text-muted-foreground" />
 									</div>
 								</div>
-								<div className="aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 flex items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-muted/50 transition-colors">
-									<Plus className="w-5 h-5 text-muted-foreground" />
-								</div>
+							</div>
+
+							<div className="pt-4 mt-4 border-t">
+								<Label
+									htmlFor="category"
+									className="text-base font-medium mb-3 block"
+								>
+									{t("products.new.category")}
+								</Label>
+								<CategorySelector />
 							</div>
 						</CardContent>
 					</Card>
@@ -126,38 +134,6 @@ function NewProductPage() {
 											placeholder="0.00"
 											className="pl-12"
 										/>
-									</div>
-								</div>
-							</div>
-							<div className="mt-4 pt-4 border-t">
-								<div className="grid grid-cols-2 gap-4">
-									<div>
-										<Label htmlFor="cost">
-											{t("products.new.costPerItem")}
-										</Label>
-										<div className="relative mt-1.5">
-											<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
-												EGP
-											</span>
-											<Input
-												id="cost"
-												type="number"
-												placeholder="0.00"
-												className="pl-12"
-											/>
-										</div>
-									</div>
-									<div className="flex items-end pb-2">
-										<div className="flex gap-4 text-sm">
-											<span className="text-muted-foreground">
-												Profit:{" "}
-												<span className="text-green-600 font-medium">--</span>
-											</span>
-											<span className="text-muted-foreground">
-												Margin:{" "}
-												<span className="text-green-600 font-medium">--</span>
-											</span>
-										</div>
 									</div>
 								</div>
 							</div>
@@ -255,79 +231,11 @@ function NewProductPage() {
 				<div className="space-y-4">
 					{/* Status */}
 					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">
+						<CardContent>
+							<Label className="text-sm font-medium mb-1.5 block">
 								{t("products.new.status")}
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<Select defaultValue="draft">
-								<SelectTrigger>
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="active">
-										{t("products.new.active")}
-									</SelectItem>
-									<SelectItem value="draft">
-										{t("products.new.draft")}
-									</SelectItem>
-								</SelectContent>
-							</Select>
-						</CardContent>
-					</Card>
-
-					{/* Publishing */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">
-								Publishing
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="flex flex-wrap gap-2">
-								<div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm">
-									<span className="w-2 h-2 bg-green-500 rounded-full" />
-									Online Store
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* Product organization */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-base font-medium">
-								{t("products.new.organization")}
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="space-y-4">
-								<div>
-									<Label htmlFor="category">{t("products.new.category")}</Label>
-									<Input
-										id="category"
-										placeholder={t("products.new.selectCategory")}
-										className="mt-1.5"
-									/>
-								</div>
-								<div>
-									<Label htmlFor="vendor">{t("products.new.vendor")}</Label>
-									<Input
-										id="vendor"
-										placeholder="e.g., Your Store Name"
-										className="mt-1.5"
-									/>
-								</div>
-								<div>
-									<Label htmlFor="tags">{t("products.new.tags")}</Label>
-									<Input
-										id="tags"
-										placeholder={t("products.new.tags")}
-										className="mt-1.5"
-									/>
-								</div>
-							</div>
+							</Label>
+							<StatusSelector />
 						</CardContent>
 					</Card>
 				</div>
