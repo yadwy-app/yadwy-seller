@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Info, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,11 @@ import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { CategorySelector } from "./-components/CategorySelector";
 import { StatusSelector } from "./-components/StatusSelector";
 import { useProduct } from "./-hooks/useProducts";
@@ -178,36 +183,37 @@ function ProductDetailPage() {
 						</CardContent>
 					</Card>
 
-					{/* Inventory */}
+					{/* Customization */}
 					<Card>
 						<CardHeader className="pb-3">
 							<div className="flex items-center justify-between">
 								<CardTitle className="text-base font-medium">
-									{t("products.new.inventory")}
+									{t("products.new.customization")}
 								</CardTitle>
 								<div className="flex items-center gap-2">
 									<Label
-										htmlFor="track-inventory"
+										htmlFor="allow-personalization"
 										className="text-sm font-normal text-muted-foreground"
 									>
-										{t("products.new.trackQuantity")}
+										{t("products.new.allowPersonalization")}
 									</Label>
-									<Switch
-										id="track-inventory"
-										defaultChecked={product.trackInventory}
-									/>
+									<Switch id="allow-personalization" />
 								</div>
 							</div>
 						</CardHeader>
 						<CardContent>
 							<div>
-								<Label htmlFor="quantity">{t("products.new.quantity")}</Label>
-								<Input
-									id="quantity"
-									type="number"
-									defaultValue={product.stock}
-									className="mt-1.5 w-32"
+								<Label htmlFor="customization-instructions">
+									{t("products.new.customizationInstructions")}
+								</Label>
+								<Textarea
+									id="customization-instructions"
+									placeholder={t("products.new.customizationPlaceholder")}
+									className="mt-1.5 min-h-[100px] bg-muted/40 border-border/50 shadow-none focus:bg-background transition-colors"
 								/>
+								<p className="text-sm text-muted-foreground mt-2">
+									{t("products.new.customizationHint")}
+								</p>
 							</div>
 						</CardContent>
 					</Card>
@@ -217,11 +223,49 @@ function ProductDetailPage() {
 				<div className="space-y-4">
 					{/* Status */}
 					<Card>
-						<CardContent className="p-3">
+						<CardContent className="pt-4 pb-4">
 							<Label className="text-sm font-medium mb-1.5 block">
 								{t("products.new.status")}
 							</Label>
 							<StatusSelector value={productStatus} />
+						</CardContent>
+					</Card>
+
+					{/* Inventory */}
+					<Card>
+						<CardContent className="pt-4 space-y-4">
+							<div className="flex items-center justify-between">
+								<div className="flex items-center gap-2">
+									<Label
+										htmlFor="track-inventory"
+										className="text-sm font-medium"
+									>
+										{t("products.new.trackQuantity")}
+									</Label>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<Info className="h-4 w-4 text-muted-foreground cursor-help" />
+										</TooltipTrigger>
+										<TooltipContent side="top" className="max-w-[250px]">
+											{t("products.new.trackQuantityTooltip")}
+										</TooltipContent>
+									</Tooltip>
+								</div>
+								<Switch
+									id="track-inventory"
+									defaultChecked={product.trackInventory}
+								/>
+							</div>
+
+							<div>
+								<Label htmlFor="quantity">{t("products.new.quantity")}</Label>
+								<Input
+									id="quantity"
+									type="number"
+									defaultValue={product.stock}
+									className="mt-1.5"
+								/>
+							</div>
 						</CardContent>
 					</Card>
 				</div>
