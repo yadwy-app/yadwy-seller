@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Plus, Upload } from "lucide-react";
+import { ArrowLeft, Info, Plus, Upload } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +14,11 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { CategorySelector } from "./-components/CategorySelector";
 import { StatusSelector } from "./-components/StatusSelector";
 
@@ -140,47 +145,6 @@ function NewProductPage() {
 						</CardContent>
 					</Card>
 
-					{/* Inventory */}
-					<Card>
-						<CardHeader className="pb-3">
-							<div className="flex items-center justify-between">
-								<CardTitle className="text-base font-medium">
-									{t("products.new.inventory")}
-								</CardTitle>
-								<div className="flex items-center gap-2">
-									<Label
-										htmlFor="track-inventory"
-										className="text-sm font-normal text-muted-foreground"
-									>
-										{t("products.new.trackQuantity")}
-									</Label>
-									<Switch id="track-inventory" defaultChecked />
-								</div>
-							</div>
-						</CardHeader>
-						<CardContent>
-							<div className="grid grid-cols-2 gap-4">
-								<div>
-									<Label htmlFor="sku">{t("products.new.sku")}</Label>
-									<Input id="sku" placeholder="SKU-001" className="mt-1.5" />
-								</div>
-								<div>
-									<Label htmlFor="barcode">{t("products.new.barcode")}</Label>
-									<Input id="barcode" placeholder="" className="mt-1.5" />
-								</div>
-							</div>
-							<div className="mt-4">
-								<Label htmlFor="quantity">{t("products.new.quantity")}</Label>
-								<Input
-									id="quantity"
-									type="number"
-									placeholder="0"
-									className="mt-1.5 w-32"
-								/>
-							</div>
-						</CardContent>
-					</Card>
-
 					{/* Shipping */}
 					<Card>
 						<CardHeader className="pb-3">
@@ -225,17 +189,98 @@ function NewProductPage() {
 							</div>
 						</CardContent>
 					</Card>
+
+					{/* Customization */}
+					<Card>
+						<CardHeader className="pb-3">
+							<div className="flex items-center justify-between">
+								<CardTitle className="text-base font-medium">
+									{t("products.new.customization")}
+								</CardTitle>
+								<div className="flex items-center gap-2">
+									<Label
+										htmlFor="allow-personalization"
+										className="text-sm font-normal text-muted-foreground"
+									>
+										{t("products.new.allowPersonalization")}
+									</Label>
+									<Switch id="allow-personalization" />
+								</div>
+							</div>
+						</CardHeader>
+						<CardContent>
+							<div>
+								<Label htmlFor="customization-instructions">
+									{t("products.new.customizationInstructions")}
+								</Label>
+								<Textarea
+									id="customization-instructions"
+									placeholder={t("products.new.customizationPlaceholder")}
+									className="mt-1.5 min-h-[100px] bg-muted/40 border-border/50 shadow-none focus:bg-background transition-colors"
+								/>
+								<p className="text-sm text-muted-foreground mt-2">
+									{t("products.new.customizationHint")}
+								</p>
+							</div>
+						</CardContent>
+					</Card>
 				</div>
 
 				{/* Sidebar - 1 column */}
 				<div className="space-y-4">
 					{/* Status */}
 					<Card>
-						<CardContent>
+						<CardContent className="pt-4 pb-4">
 							<Label className="text-sm font-medium mb-1.5 block">
 								{t("products.new.status")}
 							</Label>
 							<StatusSelector />
+						</CardContent>
+					</Card>
+
+					{/* Inventory */}
+					<Card>
+						<CardContent className="pt-4 space-y-4">
+							<div className="flex items-center justify-between">
+								<div className="flex items-center gap-2">
+									<Label
+										htmlFor="track-inventory"
+										className="text-sm font-medium"
+									>
+										{t("products.new.trackQuantity")}
+									</Label>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<Info className="h-4 w-4 text-muted-foreground cursor-help" />
+										</TooltipTrigger>
+										<TooltipContent side="top" className="max-w-[250px]">
+											{t("products.new.trackQuantityTooltip")}
+										</TooltipContent>
+									</Tooltip>
+								</div>
+								<Switch id="track-inventory" defaultChecked />
+							</div>
+
+							<div>
+								<Label htmlFor="quantity">{t("products.new.quantity")}</Label>
+								<Input
+									id="quantity"
+									type="number"
+									placeholder="0"
+									className="mt-1.5"
+								/>
+							</div>
+
+							<div className="grid grid-cols-2 gap-3">
+								<div>
+									<Label htmlFor="sku">{t("products.new.sku")}</Label>
+									<Input id="sku" placeholder="SKU-001" className="mt-1.5" />
+								</div>
+								<div>
+									<Label htmlFor="barcode">{t("products.new.barcode")}</Label>
+									<Input id="barcode" placeholder="" className="mt-1.5" />
+								</div>
+							</div>
 						</CardContent>
 					</Card>
 				</div>

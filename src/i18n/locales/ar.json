@@ -183,6 +183,7 @@
 			"barcode": "الباركود",
 			"quantity": "الكمية",
 			"trackQuantity": "تتبع الكمية",
+			"trackQuantityTooltip": "عند التفعيل، سيتم تقليل المخزون تلقائياً عند تقديم العملاء للطلبات. عندما يصل المخزون إلى صفر، سيصبح المنتج غير متاح.",
 			"organization": "التنظيم",
 			"category": "الفئة",
 			"selectCategory": "اختر الفئة",
@@ -192,7 +193,12 @@
 			"active": "نشط",
 			"draft": "مسودة",
 			"saveProduct": "حفظ المنتج",
-			"saveDraft": "حفظ كمسودة"
+			"saveDraft": "حفظ كمسودة",
+			"customization": "التخصيص",
+			"allowPersonalization": "السماح بتخصيص العميل",
+			"customizationInstructions": "تعليمات التخصيص",
+			"customizationPlaceholder": "مثال: 'أدخل الاسم الذي تريد نقشه'",
+			"customizationHint": "ستظهر للعملاء عند تفعيل التخصيص على صفحة المنتج."
 		},
 		"status": {
 			"active": "نشط",
