@@ -47,6 +47,43 @@ export interface OrdersQueryParams {
 	sort?: string;
 }
 
+// Place order request (matches PlaceOrderRequestDto from backend)
+export interface PlaceOrderRequest {
+	source: "CART" | "DIRECT";
+	items: Array<{
+		productId: number;
+		quantity: number;
+	}>;
+	shippingAddress: {
+		customerName: string;
+		address: string;
+		province: string;
+		phone: string;
+		notes?: string;
+	};
+	paymentMethod: "COD";
+}
+
+// Order response from backend
+export interface OrderResponse {
+	id: number;
+	accountId: number;
+	status: SellerOrderStatus;
+	sellerOrders: SellerOrder[];
+	shippingAddress: {
+		customerName: string;
+		address: string;
+		province: string;
+		phone: string;
+		notes?: string;
+	};
+	paymentMethod: "COD";
+	subtotal: number;
+	totalShippingFees: number;
+	total: number;
+	createdAt: string;
+}
+
 // Legacy types kept for compatibility (can be removed later)
 export type PaymentStatus =
 	| "paid"

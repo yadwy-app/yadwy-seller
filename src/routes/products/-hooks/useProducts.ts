@@ -1,24 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProductById, mockProducts } from "@/data/mock-products";
-import type { Product } from "@/types";
+import { authService } from "@/services/auth.service";
+import { productsService } from "@/services/products";
+import type { ProductResponseDto } from "@/services/products/types";
 
 export function useProducts() {
-	return useQuery<Product[]>({
+	return useQuery<ProductResponseDto[]>({
 		queryKey: ["products"],
 		queryFn: async () => {
-			// Simulate network delay
-			await new Promise((resolve) => setTimeout(resolve, 200));
-			return mockProducts;
+			const user = await authService.getCurrentUser();
+			if (!user) {
+				throw new Error("User not authenticated");
+			}
+
+			return productsService.getProducts({
+				sellerId: user.id,
+			});
 		},
 	});
 }
 
 export function useProduct(id: string) {
-	return useQuery<Product | undefined>({
+	return useQuery<ProductResponseDto | undefined>({
 		queryKey: ["products", id],
 		queryFn: async () => {
-			await new Promise((resolve) => setTimeout(resolve, 100));
-			return getProductById(id);
+			if (!id) return undefined;
+			return productsService.getProductById(Number(id));
 		},
 		enabled: !!id,
 	});

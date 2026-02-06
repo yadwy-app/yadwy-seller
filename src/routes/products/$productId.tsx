@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, MoreHorizontal, Plus } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,17 +17,9 @@ export const Route = createFileRoute("/products/$productId")({
 });
 
 function ProductDetailPage() {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { productId } = Route.useParams();
 	const { data: product, isLoading } = useProduct(productId);
-
-	const formatCurrency = (amount: number) => {
-		return new Intl.NumberFormat("en-EG", {
-			style: "currency",
-			currency: "EGP",
-			minimumFractionDigits: 2,
-		}).format(amount);
-	};
 
 	if (isLoading) {
 		return (
@@ -59,6 +51,12 @@ function ProductDetailPage() {
 		);
 	}
 
+	const productName =
+		i18n.language === "ar" ? product.name.ar : product.name.en;
+	const productDescription =
+		i18n.language === "ar" ? product.description.ar : product.description.en;
+	const productStatus = product.visible ? "active" : "draft";
+
 	return (
 		<div className="pb-20">
 			{/* Header */}
@@ -71,16 +69,9 @@ function ProductDetailPage() {
 				</Link>
 				<div className="flex-1">
 					<div className="flex items-center gap-3">
-						<h1 className="text-xl font-semibold">{product.title}</h1>
-						<StatusBadge status={product.status} />
+						<h1 className="text-xl font-semibold">{productName}</h1>
+						<StatusBadge status={productStatus} />
 					</div>
-				</div>
-				<div className="flex items-center gap-2">
-					<Button variant="outline">Duplicate</Button>
-					<Button variant="outline">View</Button>
-					<Button variant="outline" size="icon">
-						<MoreHorizontal className="w-4 h-4" />
-					</Button>
 				</div>
 			</div>
 
@@ -88,7 +79,6 @@ function ProductDetailPage() {
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 				{/* Main content - 2 columns */}
 				<div className="lg:col-span-2 space-y-4">
-					{/* Title & Description */}
 					{/* Title, Description & Media */}
 					<Card>
 						<CardContent className="pt-6 space-y-4">
@@ -97,7 +87,7 @@ function ProductDetailPage() {
 									<Label htmlFor="title">{t("products.new.name")}</Label>
 									<Input
 										id="title"
-										defaultValue={product.title}
+										defaultValue={productName}
 										className="mt-1.5 bg-muted/40 border-border/50 shadow-none focus:bg-background transition-colors"
 									/>
 								</div>
@@ -107,7 +97,7 @@ function ProductDetailPage() {
 									</Label>
 									<Textarea
 										id="description"
-										defaultValue={product.description}
+										defaultValue={productDescription}
 										className="mt-1.5 min-h-[150px] bg-muted/40 border-border/50 shadow-none focus:bg-background transition-colors"
 									/>
 								</div>
@@ -118,14 +108,11 @@ function ProductDetailPage() {
 									{t("products.new.media")}
 								</Label>
 								<div className="grid grid-cols-4 gap-3">
-									{product.images.map((image) => (
-										<div
-											key={image.id}
-											className="relative group aspect-square"
-										>
+									{product.images.map((image, index) => (
+										<div key={image} className="relative group aspect-square">
 											<img
-												src={image.url}
-												alt={image.alt}
+												src={image}
+												alt={`${productName} ${index + 1}`}
 												className="w-full h-full object-cover rounded-lg border border-border"
 											/>
 										</div>
@@ -143,7 +130,7 @@ function ProductDetailPage() {
 								>
 									{t("products.new.category")}
 								</Label>
-								<CategorySelector value={product.category} />
+								<CategorySelector value={String(product.categoryId)} />
 							</div>
 						</CardContent>
 					</Card>
@@ -205,67 +192,25 @@ function ProductDetailPage() {
 									>
 										{t("products.new.trackQuantity")}
 									</Label>
-									<Switch id="track-inventory" defaultChecked />
+									<Switch
+										id="track-inventory"
+										defaultChecked={product.trackInventory}
+									/>
 								</div>
 							</div>
 						</CardHeader>
 						<CardContent>
-							<div className="grid grid-cols-2 gap-4">
-								<div>
-									<Label htmlFor="sku">{t("products.new.sku")}</Label>
-									<Input
-										id="sku"
-										defaultValue={product.sku}
-										className="mt-1.5"
-									/>
-								</div>
-								<div>
-									<Label htmlFor="barcode">{t("products.new.barcode")}</Label>
-									<Input
-										id="barcode"
-										defaultValue={product.barcode ?? ""}
-										className="mt-1.5"
-									/>
-								</div>
-							</div>
-							<div className="mt-4">
+							<div>
 								<Label htmlFor="quantity">{t("products.new.quantity")}</Label>
 								<Input
 									id="quantity"
 									type="number"
-									defaultValue={product.inventory}
+									defaultValue={product.stock}
 									className="mt-1.5 w-32"
 								/>
 							</div>
 						</CardContent>
 					</Card>
-
-					{/* Variants */}
-					{product.variants.length > 0 && (
-						<Card>
-							<CardHeader className="pb-3">
-								<CardTitle className="text-base font-medium">
-									{t("products.detail.variants")}
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="space-y-2">
-									{product.variants.map((variant) => (
-										<div
-											key={variant.id}
-											className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-										>
-											<span className="font-medium">{variant.title}</span>
-											<div className="flex items-center gap-4 text-sm text-muted-foreground">
-												<span>{formatCurrency(variant.price)}</span>
-												<span>{variant.inventory} in stock</span>
-											</div>
-										</div>
-									))}
-								</div>
-							</CardContent>
-						</Card>
-					)}
 				</div>
 
 				{/* Sidebar - 1 column */}
@@ -276,7 +221,7 @@ function ProductDetailPage() {
 							<Label className="text-sm font-medium mb-1.5 block">
 								{t("products.new.status")}
 							</Label>
-							<StatusSelector value={product.status} />
+							<StatusSelector value={productStatus} />
 						</CardContent>
 					</Card>
 				</div>

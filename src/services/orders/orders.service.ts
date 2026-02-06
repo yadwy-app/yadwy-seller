@@ -1,5 +1,10 @@
 import { httpClient } from "@/lib/http-client";
-import type { OrdersQueryParams, SellerOrder } from "./types";
+import type {
+	OrderResponse,
+	OrdersQueryParams,
+	PlaceOrderRequest,
+	SellerOrder,
+} from "./types";
 
 export const ordersService = {
 	/**
@@ -51,6 +56,15 @@ export const ordersService = {
 				status,
 			},
 		);
+
+		return response;
+	},
+
+	/**
+	 * Create a new order (place order)
+	 */
+	createOrder: async (data: PlaceOrderRequest): Promise<OrderResponse> => {
+		const response = await httpClient.post<OrderResponse>("/v1/orders", data);
 
 		return response;
 	},
