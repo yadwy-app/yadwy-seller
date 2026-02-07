@@ -198,7 +198,15 @@
 			"allowPersonalization": "Allow customer personalization",
 			"customizationInstructions": "Customization Instructions",
 			"customizationPlaceholder": "e.g., 'Enter the name you want engraved'",
-			"customizationHint": "Visible to customers when they enable personalization on the product page."
+			"customizationHint": "Visible to customers when they enable personalization on the product page.",
+			"errors": {
+				"nameRequired": "Product name is required",
+				"descriptionRequired": "Description is required",
+				"priceRequired": "Price is required",
+				"priceInvalid": "Price must be a valid number",
+				"categoryRequired": "Category is required",
+				"createFailed": "Failed to create product"
+			}
 		},
 		"status": {
 			"active": "Active",

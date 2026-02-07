@@ -198,7 +198,15 @@
 			"allowPersonalization": "السماح بتخصيص العميل",
 			"customizationInstructions": "تعليمات التخصيص",
 			"customizationPlaceholder": "مثال: 'أدخل الاسم الذي تريد نقشه'",
-			"customizationHint": "ستظهر للعملاء عند تفعيل التخصيص على صفحة المنتج."
+			"customizationHint": "ستظهر للعملاء عند تفعيل التخصيص على صفحة المنتج.",
+			"errors": {
+				"nameRequired": "اسم المنتج مطلوب",
+				"descriptionRequired": "الوصف مطلوب",
+				"priceRequired": "السعر مطلوب",
+				"priceInvalid": "يجب إدخال سعر صحيح",
+				"categoryRequired": "الفئة مطلوبة",
+				"createFailed": "فشل إنشاء المنتج"
+			}
 		},
 		"status": {
 			"active": "نشط",
