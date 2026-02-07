@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 import { CategorySelector } from "./-components/CategorySelector";
 import { StatusSelector } from "./-components/StatusSelector";
+import { useCategories } from "./-hooks/useCategories";
 
 export const Route = createFileRoute("/products/new")({
 	component: NewProductPage,
@@ -28,6 +29,8 @@ export const Route = createFileRoute("/products/new")({
 
 function NewProductPage() {
 	const { t } = useTranslation();
+	const { data: categories = [], isLoading: categoriesLoading } =
+		useCategories();
 	return (
 		<div className="pb-20">
 			{/* Header */}
@@ -97,7 +100,10 @@ function NewProductPage() {
 								>
 									{t("products.new.category")}
 								</Label>
-								<CategorySelector />
+								<CategorySelector
+									categories={categories}
+									isLoading={categoriesLoading}
+								/>
 							</div>
 						</CardContent>
 					</Card>
