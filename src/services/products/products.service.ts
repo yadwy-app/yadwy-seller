@@ -1,5 +1,9 @@
 import { httpClient } from "@/lib/http-client";
-import type { ProductListParams, ProductResponseDto } from "./types";
+import type {
+	CreateProductRequestDto,
+	ProductListParams,
+	ProductResponseDto,
+} from "./types";
 
 export const productsService = {
 	/**
@@ -29,6 +33,20 @@ export const productsService = {
 	getProductById: async (id: number): Promise<ProductResponseDto> => {
 		const response = await httpClient.get<ProductResponseDto>(
 			`/v1/products/${id}`,
+		);
+
+		return response;
+	},
+
+	/**
+	 * Create a new product
+	 */
+	createProduct: async (
+		data: CreateProductRequestDto,
+	): Promise<ProductResponseDto> => {
+		const response = await httpClient.post<ProductResponseDto>(
+			"/v1/products",
+			data,
 		);
 
 		return response;

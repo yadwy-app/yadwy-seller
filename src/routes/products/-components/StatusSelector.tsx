@@ -25,11 +25,11 @@ const statuses = [
 		label: "Draft",
 		description: "Not visible on selected sales channels or markets",
 	},
-];
+] as const;
 
 interface StatusSelectorProps {
-	value?: string;
-	onChange?: (value: string) => void;
+	value?: "active" | "draft";
+	onChange?: (value: "active" | "draft") => void;
 	className?: string;
 }
 
@@ -39,7 +39,9 @@ export function StatusSelector({
 	className,
 }: StatusSelectorProps) {
 	const [open, setOpen] = React.useState(false);
-	const [currentValue, setCurrentValue] = React.useState(value || "active");
+	const [currentValue, setCurrentValue] = React.useState<"active" | "draft">(
+		value || "active",
+	);
 	const triggerRef = React.useRef<HTMLButtonElement>(null);
 	const [triggerWidth, setTriggerWidth] = React.useState<number>(0);
 
@@ -62,7 +64,7 @@ export function StatusSelector({
 	const selectedStatus =
 		statuses.find((s) => s.value === currentValue) || statuses[0];
 
-	const handleSelect = (val: string) => {
+	const handleSelect = (val: "active" | "draft") => {
 		setCurrentValue(val);
 		onChange?.(val);
 		setOpen(false);

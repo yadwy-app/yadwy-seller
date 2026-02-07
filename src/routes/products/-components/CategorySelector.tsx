@@ -1,5 +1,7 @@
+import { useSize } from "@radix-ui/react-use-size";
 import { ArrowLeft, ChevronDown, ChevronRight, X } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Popover,
@@ -7,137 +9,12 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-
-export interface Category {
-	id: string;
-	name: string;
-	children?: Category[];
-}
-
-// Mock data - nested up to 3 levels like Shopify
-const CATEGORIES: Category[] = [
-	{
-		id: "animals",
-		name: "Animals & Pet Supplies",
-		children: [
-			{ id: "pet-food", name: "Pet Food" },
-			{ id: "pet-toys", name: "Pet Toys" },
-			{ id: "pet-accessories", name: "Pet Accessories" },
-		],
-	},
-	{
-		id: "apparel",
-		name: "Apparel & Accessories",
-		children: [
-			{
-				id: "clothing",
-				name: "Clothing",
-				children: [
-					{ id: "shirts", name: "Shirts" },
-					{ id: "pants", name: "Pants" },
-					{ id: "dresses", name: "Dresses" },
-					{ id: "outerwear", name: "Outerwear" },
-				],
-			},
-			{
-				id: "clothing-accessories",
-				name: "Clothing Accessories",
-				children: [
-					{ id: "belts", name: "Belts" },
-					{ id: "hats", name: "Hats" },
-					{ id: "scarves", name: "Scarves" },
-				],
-			},
-			{ id: "costumes", name: "Costumes & Accessories" },
-			{ id: "handbags", name: "Handbag & Wallet Accessories" },
-			{ id: "handbags-wallets", name: "Handbags, Wallets & Cases" },
-			{
-				id: "jewelry",
-				name: "Jewelry",
-				children: [
-					{ id: "necklaces", name: "Necklaces" },
-					{ id: "rings", name: "Rings" },
-					{ id: "bracelets", name: "Bracelets" },
-					{ id: "earrings", name: "Earrings" },
-				],
-			},
-			{ id: "shoe-accessories", name: "Shoe Accessories" },
-			{
-				id: "shoes",
-				name: "Shoes",
-				children: [
-					{ id: "sneakers", name: "Sneakers" },
-					{ id: "boots", name: "Boots" },
-					{ id: "sandals", name: "Sandals" },
-					{ id: "heels", name: "Heels" },
-				],
-			},
-		],
-	},
-	{
-		id: "arts",
-		name: "Arts & Entertainment",
-		children: [
-			{ id: "art-supplies", name: "Art Supplies" },
-			{ id: "music", name: "Music" },
-			{ id: "crafts", name: "Crafts & Hobbies" },
-		],
-	},
-	{
-		id: "baby",
-		name: "Baby & Toddler",
-		children: [
-			{ id: "baby-clothing", name: "Baby Clothing" },
-			{ id: "baby-toys", name: "Baby Toys" },
-			{ id: "nursery", name: "Nursery" },
-		],
-	},
-	{
-		id: "business",
-		name: "Business & Industrial",
-		children: [
-			{ id: "office-supplies", name: "Office Supplies" },
-			{ id: "industrial-equipment", name: "Industrial Equipment" },
-		],
-	},
-	{
-		id: "cameras",
-		name: "Cameras & Optics",
-		children: [
-			{ id: "cameras-photo", name: "Cameras" },
-			{ id: "lenses", name: "Lenses" },
-			{ id: "binoculars", name: "Binoculars" },
-		],
-	},
-	{
-		id: "electronics",
-		name: "Electronics",
-		children: [
-			{
-				id: "computers",
-				name: "Computers",
-				children: [
-					{ id: "laptops", name: "Laptops" },
-					{ id: "desktops", name: "Desktops" },
-					{ id: "tablets", name: "Tablets" },
-				],
-			},
-			{ id: "phones", name: "Mobile Phones" },
-			{ id: "audio", name: "Audio Equipment" },
-		],
-	},
-	{
-		id: "food",
-		name: "Food, Beverages & Tobacco",
-		children: [
-			{ id: "food-items", name: "Food Items" },
-			{ id: "beverages", name: "Beverages" },
-		],
-	},
-];
+import type { CategoryResponseDto } from "@/services/categories/types";
 
 interface CategorySelectorProps {
 	value?: string;
+	categories?: CategoryResponseDto[];
+	isLoading?: boolean;
 	onChange?: (categoryId: string, categoryPath: string) => void;
 	className?: string;
 }
@@ -149,53 +26,89 @@ interface CategoryPath {
 
 export function CategorySelector({
 	value,
+	categories = [],
+	isLoading = false,
 	onChange,
 	className,
 }: CategorySelectorProps) {
+	const { i18n, t } = useTranslation();
 	const [open, setOpen] = React.useState(false);
-	const [navStack, setNavStack] = React.useState<Category[]>([]);
+	const [navStack, setNavStack] = React.useState<CategoryResponseDto[]>([]);
 	const [selectedCategory, setSelectedCategory] =
 		React.useState<CategoryPath | null>(value ? { id: "", name: value } : null);
 	const triggerRef = React.useRef<HTMLButtonElement>(null);
-	const [triggerWidth, setTriggerWidth] = React.useState<number>(0);
+	const triggerSize = useSize(triggerRef.current);
 
-	React.useEffect(() => {
-		if (triggerRef.current) {
-			setTriggerWidth(triggerRef.current.offsetWidth);
-		}
-	}, []);
+	const getLocalizedName = React.useCallback(
+		(category: CategoryResponseDto) => {
+			return i18n.language === "ar"
+				? category.name.ar
+				: category.name.en || category.name.ar;
+		},
+		[i18n.language],
+	);
 
-	React.useEffect(() => {
-		const handleResize = () => {
-			if (triggerRef.current) {
-				setTriggerWidth(triggerRef.current.offsetWidth);
+	const findCategoryPath = React.useCallback(
+		(
+			nodes: CategoryResponseDto[],
+			targetId: string,
+			path: CategoryResponseDto[] = [],
+		): CategoryResponseDto[] | null => {
+			for (const node of nodes) {
+				const nextPath = [...path, node];
+				if (node.id.toString() === targetId) {
+					return nextPath;
+				}
+				if (node.children?.length) {
+					const found = findCategoryPath(node.children, targetId, nextPath);
+					if (found) return found;
+				}
 			}
-		};
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
+			return null;
+		},
+		[],
+	);
+
+	React.useEffect(() => {
+		if (!value) {
+			setSelectedCategory(null);
+			return;
+		}
+		const path = findCategoryPath(categories, value);
+		if (path && path.length > 0) {
+			const leaf = path[path.length - 1];
+			setSelectedCategory({
+				id: leaf.id.toString(),
+				name: getLocalizedName(leaf),
+			});
+		}
+	}, [categories, findCategoryPath, getLocalizedName, value]);
 
 	// Get current categories to display
 	const currentCategories =
 		navStack.length > 0
 			? navStack[navStack.length - 1].children || []
-			: CATEGORIES;
+			: categories;
 
 	// Get the current parent name for the back button
 	const currentParent =
 		navStack.length > 0 ? navStack[navStack.length - 1] : null;
 
-	const handleCategoryClick = (category: Category) => {
+	const handleCategoryClick = (category: CategoryResponseDto) => {
 		if (category.children && category.children.length > 0) {
 			// Has children - navigate into it
 			setNavStack([...navStack, category]);
 		} else {
 			// Leaf node - select it
-			const fullPath = [...navStack.map((c) => c.name), category.name].join(
-				" > ",
-			);
-			setSelectedCategory({ id: category.id, name: category.name });
-			onChange?.(category.id, fullPath);
+			const fullPath = [
+				...navStack.map((c) => getLocalizedName(c)),
+				getLocalizedName(category),
+			].join(" > ");
+			setSelectedCategory({
+				id: category.id.toString(),
+				name: getLocalizedName(category),
+			});
+			onChange?.(category.id.toString(), fullPath);
 			setOpen(false);
 			setNavStack([]);
 		}
@@ -219,7 +132,10 @@ export function CategorySelector({
 		if (selectedCategory) {
 			return selectedCategory.name;
 		}
-		return "Select category";
+		if (isLoading) {
+			return t("common.loading");
+		}
+		return t("products.new.selectCategory");
 	};
 
 	return (
@@ -232,10 +148,10 @@ export function CategorySelector({
 		>
 			<PopoverTrigger asChild>
 				<Button
-					ref={triggerRef}
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
+					ref={triggerRef}
 					className={cn(
 						"w-full justify-between bg-muted/40 font-normal border-border/50 shadow-none hover:bg-accent hover:text-accent-foreground h-9",
 						!selectedCategory && "text-muted-foreground",
@@ -247,9 +163,9 @@ export function CategorySelector({
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent
-				className="p-0"
+				className="p-0 min-w-[320px]"
 				align="start"
-				style={{ width: Math.max(triggerWidth, 320) }}
+				style={{ width: triggerSize?.width }}
 			>
 				<div className="flex flex-col">
 					{/* Back button header when navigated into subcategories */}
@@ -260,7 +176,9 @@ export function CategorySelector({
 							className="flex items-center gap-2 px-3 py-2.5 border-b text-sm font-medium hover:bg-accent transition-colors text-left"
 						>
 							<ArrowLeft className="h-4 w-4" />
-							<span>{currentParent?.name}</span>
+							<span>
+								{currentParent ? getLocalizedName(currentParent) : ""}
+							</span>
 						</button>
 					)}
 
@@ -273,10 +191,11 @@ export function CategorySelector({
 								onClick={() => handleCategoryClick(category)}
 								className={cn(
 									"flex items-center justify-between w-full px-3 py-2.5 text-sm text-left hover:bg-accent transition-colors",
-									selectedCategory?.id === category.id && "bg-accent",
+									selectedCategory?.id === category.id.toString() &&
+										"bg-accent",
 								)}
 							>
-								<span>{category.name}</span>
+								<span>{getLocalizedName(category)}</span>
 								{category.children && category.children.length > 0 && (
 									<ChevronRight className="h-4 w-4 opacity-50" />
 								)}
