@@ -9,13 +9,13 @@ Yadwy Seller is a merchant dashboard built with TanStack Start (full-stack React
 ## Commands
 
 ```bash
-npm run dev          # Start dev server on port 3000
-npm run build        # Production build
-npm run preview      # Preview production build
-npm run test         # Run tests with Vitest
-npm run check        # Run Biome linter + formatter check
-npm run lint         # Lint only
-npm run format       # Format only
+bun run dev          # Start dev server on port 3001
+bun run build        # Production build
+bun run preview      # Preview production build
+bun run test         # Run tests with Vitest
+bun run check        # Run Biome linter + formatter check
+bun run lint         # Lint only
+bun run format       # Format only
 ```
 
 ## Architecture
@@ -88,7 +88,7 @@ src/
 ### Adding shadcn Components
 
 ```bash
-pnpm dlx shadcn@latest add <component-name>
+bunx --bun shadcn@latest add <component-name>
 ```
 
 ## Code Style

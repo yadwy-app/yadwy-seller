@@ -9,7 +9,7 @@ import viteTsConfigPaths from "vite-tsconfig-paths";
 
 const config = defineConfig({
 	server: {
-		port: 3000,
+		port: 3001,
 	},
 	resolve: {
 		alias: {

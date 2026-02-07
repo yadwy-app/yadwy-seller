@@ -2,9 +2,9 @@
 
 ## Commands
 ```bash
-npm run dev      # Dev server (port 3000)
-npm run build    # Production build - RUN AFTER EVERY CHANGE
-npm run check    # Biome lint + format
+bun run dev      # Dev server (port 3001)
+bun run build    # Production build - RUN AFTER EVERY CHANGE
+bun run check    # Biome lint + format
 ```
 
 ## Stack
@@ -27,17 +27,17 @@ src/hooks/            # SHARED hooks only
 ## Rules
 
 ### Pre-Commit Checks
-- Run `npm run check` before committing any code changes
+- Run `bun run check` before committing any code changes
 - This runs Biome lint + format to catch errors early
 - Fix all lint errors (button types, import order, etc.)
 - Lefthook will block commits with lint errors
 
 ### Build Verification
-- Run `npm run build` after every change
+- Run `bun run build` after every change
 - Fix all TypeScript errors before committing
 
 ### Component Guidelines
-- Use shadcn/ui components first (`pnpm dlx shadcn@latest add <name>`)
+- Use shadcn/ui components first (`bunx --bun shadcn@latest add <name>`)
 - Keep components small and focused (single responsibility)
 - Max 100 lines per component - split if larger
 - No inline styles - use Tailwind classes
