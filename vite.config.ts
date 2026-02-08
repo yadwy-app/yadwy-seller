@@ -18,8 +18,7 @@ const config = defineConfig({
 	},
 	plugins: [
 		devtools(),
-		netlify(),
-		// this is the plugin that enables path aliases
+		...(process.env.NETLIFY ? [netlify()] : []),
 		viteTsConfigPaths({
 			projects: ["./tsconfig.json"],
 		}),
