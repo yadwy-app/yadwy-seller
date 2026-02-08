@@ -19,6 +19,7 @@ FROM node:22-slim AS production
 WORKDIR /app
 
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/server-entry.js ./
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./
 
@@ -27,4 +28,4 @@ ENV PORT=3001
 
 EXPOSE 3001
 
-CMD ["node", "dist/server/server.js"]
+CMD ["node", "server-entry.js"]
